@@ -1,7 +1,19 @@
 [
     {
-        "username": "admin",
-        "password": "blood1234",
-        "name": "অ্যাডমিন (ব্লাড ব্যাংক)"
+        "id": "usr_1791781543_5453",
+        "username": "tariqul",
+        "password": "pass1234",
+        "name": "Tariqul Islam",
+        "token": "",
+        "orgSettings": {
+            "orgName": "চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ",
+            "orgSubtitle": "",
+            "slogan": "মানবতার সেবায় রক্তদান",
+            "heroQuote": "রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে",
+            "quote": "রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার",
+            "templateId": "bancharampur-classic",
+            "orgLogo": "\/default_org_logo.png"
+        },
+        "createdAt": "2026-10-12 07:05:43"
     }
 ]

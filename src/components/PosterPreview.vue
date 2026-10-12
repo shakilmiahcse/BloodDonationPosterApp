@@ -9,8 +9,8 @@
         @click="downloadImage('png')"
         id="btn-download-png"
       >
-        <span v-if="!isGenerating">📥 পোস্টার ডাউনলোড (PNG)</span>
-        <span v-else>⏳ তৈরি হচ্ছে...</span>
+        <span v-if="!isGenerating">{{ t('downloadPngBtn') }}</span>
+        <span v-else>{{ t('downloadingBtn') }}</span>
       </button>
 
       <!-- Web Share / Direct WhatsApp Share -->
@@ -19,9 +19,9 @@
         :disabled="isGenerating"
         @click="shareDirectWhatsApp"
         id="btn-whatsapp-share"
-        title="হোয়াটসঅ্যাপে পাঠান"
+        :title="t('whatsappBtn')"
       >
-        <span>💬 হোয়াটসঅ্যাপ শেয়ার</span>
+        <span>{{ t('whatsappBtn') }}</span>
       </button>
 
       <!-- Native Mobile Share API -->
@@ -31,9 +31,9 @@
         :disabled="isGenerating"
         @click="shareNative"
         id="btn-native-share"
-        title="অন্যান্য অ্যাপে শেয়ার"
+        :title="t('mobileShareBtn')"
       >
-        <span>📤 সোশ্যাল শেয়ার</span>
+        <span>{{ t('mobileShareBtn') }}</span>
       </button>
 
       <!-- Copy Caption for Social Media -->
@@ -41,20 +41,22 @@
         class="btn btn-secondary btn-sm" 
         @click="copyCaptionText"
         id="btn-copy-caption"
-        title="ফেসবুক/সোশ্যাল মিডিয়া পোস্টের ক্যাপশন কপি করুন"
+        :title="t('copyCaptionBtn')"
       >
-        <span>📋 ক্যাপশন কপি</span>
+        <span>{{ t('copyCaptionBtn') }}</span>
       </button>
 
-      <!-- Save Record to JSON (Login Required) -->
+      <!-- Save Record to Account (Multi-user friendly) -->
       <button 
         class="btn btn-success btn-sm" 
         :disabled="isSaving"
         @click="handleSaveRecord"
         id="btn-save-record"
       >
-        <span v-if="!isSaving">💾 {{ authState.authenticated ? 'জেসনে সেভ করুন' : 'ডাটা সেভ (লগইন)' }}</span>
-        <span v-else>সেভ হচ্ছে...</span>
+        <span v-if="!isSaving">
+          {{ authState.authenticated ? t('saveRecordBtn') : t('saveLoginPrompt') }}
+        </span>
+        <span v-else>{{ t('savingBtn') }}</span>
       </button>
     </div>
 
@@ -66,13 +68,13 @@
       />
     </div>
 
-    <!-- Helpful Helper Text -->
+    <!-- User-Friendly Notice (No Technical Terms) -->
     <div class="preview-footer-tips">
       <p v-if="!authState.authenticated" class="guest-tip">
-        ℹ️ <strong>গেস্ট মোড:</strong> আপনি আনলিমিটেড পোস্টার ডাউনলোড ও শেয়ার করতে পারবেন। ডাটা জেসন ফাইলে সংরক্ষণ করতে উপরের লগইন বাটনে ক্লিক করুন।
+        {{ t('guestNotice') }}
       </p>
       <p v-else class="auth-tip">
-        ✅ <strong>অ্যাডমিন মোড:</strong> আপনার তৈরি করা ডোনার রেকর্ড সার্ভারের <code>records.json</code> ফাইলে সংরক্ষিত থাকবে।
+        {{ t('authNotice') }}
       </p>
     </div>
   </div>
@@ -83,6 +85,7 @@ import { ref, computed, onMounted } from 'vue';
 import * as htmlToImage from 'html-to-image';
 import confetti from 'canvas-confetti';
 import { generateSocialCaption } from '../utils/bengaliUtils';
+import { t } from '../utils/i18n';
 
 // Templates
 import TemplateClassic from './templates/TemplateClassic.vue';
@@ -102,7 +105,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['save-record', 'open-login', 'notify']);
+const emit = defineEmits(['save-record', 'open-auth', 'notify']);
 
 const captureArea = ref(null);
 const isGenerating = ref(false);
@@ -129,7 +132,7 @@ const currentTemplateComponent = computed(() => {
   }
 });
 
-// Trigger celebratory confetti
+// Confetti animation
 function fireConfetti() {
   try {
     confetti({
@@ -145,7 +148,7 @@ function fireConfetti() {
 async function downloadImage(format = 'png') {
   if (!captureArea.value) return;
   isGenerating.value = true;
-  emit('notify', 'পোস্টার তৈরি হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...');
+  emit('notify', t('downloadingBtn'));
 
   try {
     const scale = 2.5; // High definition output
@@ -172,10 +175,10 @@ async function downloadImage(format = 'png') {
     link.click();
 
     fireConfetti();
-    emit('notify', '✅ পোস্টার সফলভাবে ডাউনলোড হয়েছে!');
+    emit('notify', t('toastDownloaded'));
   } catch (error) {
     console.error('Image export error:', error);
-    emit('notify', 'পোস্টার তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    emit('notify', 'Image generation error. Please try again.');
   } finally {
     isGenerating.value = false;
   }
@@ -187,14 +190,13 @@ function shareDirectWhatsApp() {
   const encodedText = encodeURIComponent(caption);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
   window.open(whatsappUrl, '_blank');
-  emit('notify', 'হোয়াটসঅ্যাপ ওপেন হচ্ছে...');
+  emit('notify', 'Opening WhatsApp...');
 }
 
-// Native Web Share (for Mobile)
+// Native Web Share (Mobile)
 async function shareNative() {
   if (!captureArea.value || !navigator.share) return;
   isGenerating.value = true;
-  emit('notify', 'শেয়ার অপশন প্রস্তুত হচ্ছে...');
 
   try {
     const blob = await htmlToImage.toBlob(captureArea.value, { pixelRatio: 2, quality: 0.95 });
@@ -206,13 +208,13 @@ async function shareNative() {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
-        title: 'রক্তদান পোস্টার',
+        title: 'Blood Donor Poster',
         text: caption
       });
-      emit('notify', 'সফলভাবে শেয়ার করা হয়েছে!');
+      emit('notify', 'Shared successfully!');
     } else {
       await navigator.share({
-        title: 'রক্তদান পোস্টার',
+        title: 'Blood Donor Poster',
         text: caption
       });
     }
@@ -231,7 +233,7 @@ async function copyCaptionText() {
   const caption = generateSocialCaption(props.formData);
   try {
     await navigator.clipboard.writeText(caption);
-    emit('notify', '📋 পোস্টের ক্যাপশন কপি হয়েছে! ফেসবুকে পেস্ট করতে পারেন।');
+    emit('notify', t('toastCopied'));
   } catch (e) {
     const textArea = document.createElement('textarea');
     textArea.value = caption;
@@ -239,14 +241,14 @@ async function copyCaptionText() {
     textArea.select();
     document.execCommand('copy');
     document.body.removeChild(textArea);
-    emit('notify', '📋 পোস্টের ক্যাপশন কপি হয়েছে!');
+    emit('notify', t('toastCopied'));
   }
 }
 
 // Handle Record Saving
 function handleSaveRecord() {
   if (!props.authState.authenticated) {
-    emit('open-login', 'ডাটা জেসন ফাইলে সংরক্ষণ করতে অনুগ্রহ করে প্রথমে লগইন করুন।');
+    emit('open-auth', 'register');
   } else {
     emit('save-record');
   }
@@ -258,7 +260,7 @@ function handleSaveRecord() {
   margin-top: 1rem;
   max-width: 540px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.04);
@@ -267,9 +269,11 @@ function handleSaveRecord() {
 
 .guest-tip {
   color: #94a3b8;
+  line-height: 1.4;
 }
 
 .auth-tip {
   color: #34d399;
+  line-height: 1.4;
 }
 </style>

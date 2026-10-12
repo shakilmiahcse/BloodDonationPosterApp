@@ -5,22 +5,33 @@
       <div class="brand-container">
         <div class="brand-icon-box">🩸</div>
         <div class="brand-text">
-          <h1>রক্তদান পোস্টার মেকার</h1>
-          <p>ব্লাড ডোনেশন পোস্টার ও রেকর্ড সিস্টেম</p>
+          <h1>{{ t('appTitle') }}</h1>
+          <p>{{ t('appSubtitle') }}</p>
         </div>
       </div>
 
       <div class="header-actions">
+        <!-- Language Switcher Button (Default: English) -->
+        <button 
+          class="btn btn-secondary btn-sm lang-toggle-btn" 
+          @click="toggleAppLanguage"
+          id="btn-language-toggle"
+          :title="currentLang === 'en' ? 'বাংলা ভাষায় পরিবর্তন করুন' : 'Switch to English'"
+        >
+          <span class="lang-icon">🌐</span>
+          <span class="lang-text">{{ currentLang === 'en' ? 'বাংলা' : 'English' }}</span>
+        </button>
+
         <!-- Records Button -->
         <button 
           class="btn btn-secondary btn-sm" 
           @click="showRecordsModal = true"
           id="btn-open-records"
         >
-          <span>📁 রেকর্ডস</span>
+          <span>📁 {{ t('recordsTab') }}</span>
         </button>
 
-        <!-- Auth Status Button -->
+        <!-- Auth Status Button (Compact, doesn't immediately log out on click) -->
         <div 
           class="badge-auth-status" 
           :class="authState.authenticated ? 'logged-in' : 'guest'"
@@ -28,10 +39,10 @@
           id="btn-auth-toggle"
         >
           <span v-if="authState.authenticated">
-            🟢 অ্যাডমিন ({{ authState.user?.name || 'লগআউট' }})
+            🟢 {{ authState.user?.name || authState.user?.username }}
           </span>
           <span v-else>
-            ⚪ গেস্ট (লগইন)
+            ⚪ {{ t('loginBtn') }}
           </span>
         </div>
       </div>
@@ -47,7 +58,7 @@
           id="tab-btn-editor"
         >
           <span>✏️</span>
-          <span>এডিটর</span>
+          <span>{{ t('editorTab') }}</span>
         </button>
 
         <button 
@@ -57,7 +68,7 @@
           id="tab-btn-preview"
         >
           <span>👁️</span>
-          <span>পোস্টার প্রিভিউ</span>
+          <span>{{ t('previewTab') }}</span>
         </button>
 
         <button 
@@ -66,7 +77,7 @@
           id="tab-btn-records"
         >
           <span>📁</span>
-          <span>রেকর্ডস</span>
+          <span>{{ t('recordsTab') }}</span>
         </button>
 
         <button 
@@ -75,7 +86,7 @@
           id="tab-btn-auth"
         >
           <span>{{ authState.authenticated ? '👤' : '🔐' }}</span>
-          <span>{{ authState.authenticated ? 'অ্যাকাউন্ট' : 'লগইন' }}</span>
+          <span>{{ authState.authenticated ? t('profileBtn') : t('loginTab') }}</span>
         </button>
       </nav>
 
@@ -87,6 +98,8 @@
       >
         <EditorForm 
           :formData="formData" 
+          :authState="authState"
+          @save-org-defaults="saveOrgDefaults"
           @notify="showToast" 
         />
       </section>
@@ -100,34 +113,45 @@
           :formData="formData" 
           :authState="authState" 
           @save-record="saveDonorRecord" 
-          @open-login="openLoginWithMessage"
+          @open-auth="openAuthModal"
           @notify="showToast"
         />
       </section>
     </div>
 
-    <!-- Modals -->
-    <LoginModal 
-      v-if="showLoginModal" 
-      :message="loginModalMsg"
-      @close="showLoginModal = false"
-      @login-success="onLoginSuccess"
+    <!-- Auth Modal (Registration & Login) -->
+    <AuthModal 
+      v-if="showAuthModal" 
+      :initialTab="authModalTab"
+      @close="showAuthModal = false"
+      @auth-success="onAuthSuccess"
       @notify="showToast"
     />
 
+    <!-- User Profile & Settings Menu (Opens when clicking user badge) -->
+    <UserMenuModal
+      v-if="showUserMenu && authState.authenticated"
+      :user="authState.user || {}"
+      :orgName="formData.orgName"
+      @close="showUserMenu = false"
+      @logout="performLogout"
+      @save-defaults="saveOrgDefaults"
+    />
+
+    <!-- Records Drawer Modal -->
     <RecordsDrawer 
       v-if="showRecordsModal" 
       :authState="authState"
       @close="showRecordsModal = false"
-      @open-login="openLoginWithMessage"
+      @open-auth="openAuthModal('login')"
       @load-record="loadRecord"
       @notify="showToast"
     />
 
     <!-- Toast Notification Container -->
     <div class="toast-container" v-if="toasts.length > 0">
-      <div v-for="t in toasts" :key="t.id" class="toast">
-        {{ t.text }}
+      <div v-for="tItem in toasts" :key="tItem.id" class="toast">
+        {{ tItem.text }}
       </div>
     </div>
   </div>
@@ -137,34 +161,40 @@
 import { ref, reactive, onMounted } from 'vue';
 import EditorForm from './components/EditorForm.vue';
 import PosterPreview from './components/PosterPreview.vue';
-import LoginModal from './components/LoginModal.vue';
+import AuthModal from './components/AuthModal.vue';
+import UserMenuModal from './components/UserMenuModal.vue';
 import RecordsDrawer from './components/RecordsDrawer.vue';
 import { api } from './utils/api';
+import { t, currentLang, toggleLanguage } from './utils/i18n';
 
-const activeMobileTab = ref('preview'); // Default to preview so user sees the impressive poster right away!
-const showLoginModal = ref(false);
+const activeMobileTab = ref('preview');
+const showAuthModal = ref(false);
+const showUserMenu = ref(false);
+const authModalTab = ref('login');
 const showRecordsModal = ref(false);
-const loginModalMsg = ref('');
 
 const authState = reactive({
   authenticated: false,
   user: null
 });
 
-// Form state initialized with the sample image details provided by user
+// Initial form state with true organization name and logo
+const defaultOrgLogo = '/default_org_logo.png';
+
 const formData = reactive({
   id: '',
-  templateId: 'bancharampur-classic', // Default template matching sample
-  orgName: 'BANCHARAMPUR BLOOD BANK',
-  orgSubtitle: 'বাঞ্ছারামপুর ব্লাড ব্যাংক',
-  slogan: 'রক্ত দেওয়ার জন্যেই আমরা',
-  heroQuote: 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে',
+  templateId: 'bancharampur-classic',
+  orgName: 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ',
+  orgSubtitle: '',
+  orgLogo: defaultOrgLogo,
+  slogan: 'মানবতার সেবায় রক্তদান',
+  heroQuote: 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে',
   quote: 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার',
   donorName: 'মোঃ জামাল উদ্দিন',
   bloodGroup: 'O+',
   donationCount: '১ম বার',
   donationDate: '2026-10-07',
-  referenceName: 'বাঞ্ছারামপুর ব্লাড ব্যাংক', // Optional reference
+  referenceName: '', // Empty by default
   donorPhoto: '/sample_donor.jfif',
   photoZoom: 1,
   photoPanX: 0,
@@ -172,7 +202,7 @@ const formData = reactive({
   dateFormat: 'numeric'
 });
 
-// Toasts
+// Toast system
 const toasts = ref([]);
 function showToast(text) {
   const id = Date.now() + Math.random();
@@ -182,43 +212,84 @@ function showToast(text) {
   }, 3500);
 }
 
+function toggleAppLanguage() {
+  toggleLanguage();
+  showToast(currentLang.value === 'en' ? 'Switched to English' : 'বাংলা ভাষায় পরিবর্তিত হয়েছে');
+}
+
 onMounted(async () => {
   const auth = await api.checkAuth();
   authState.authenticated = auth.authenticated;
   authState.user = auth.user;
+
+  // Restore user's saved organization settings and logo
+  if (auth.authenticated && auth.user?.orgSettings) {
+    applyUserOrgSettings(auth.user.orgSettings);
+  }
 });
+
+function applyUserOrgSettings(settings) {
+  if (!settings) return;
+  if (settings.templateId) formData.templateId = settings.templateId;
+  if (settings.orgName) formData.orgName = settings.orgName;
+  if (settings.orgSubtitle) formData.orgSubtitle = settings.orgSubtitle;
+  if (settings.orgLogo) formData.orgLogo = settings.orgLogo;
+  if (settings.slogan) formData.slogan = settings.slogan;
+  if (settings.heroQuote) formData.heroQuote = settings.heroQuote;
+  if (settings.quote) formData.quote = settings.quote;
+}
 
 function handleAuthClick() {
   if (authState.authenticated) {
-    if (confirm('আপনি কি লগআউট করতে চান?')) {
-      api.logout();
-      authState.authenticated = false;
-      authState.user = null;
-      showToast('লগআউট সফল হয়েছে। এখন গেস্ট মোডে আছেন।');
-    }
+    // DO NOT logout directly! Open user profile & settings menu modal
+    showUserMenu.value = true;
   } else {
-    loginModalMsg.value = 'ডোনারদের ডাটা সার্ভারের records.json ফাইলে সংরক্ষণ এবং রেকর্ড লিস্ট দেখতে লগইন করুন।';
-    showLoginModal.value = true;
+    authModalTab.value = 'login';
+    showAuthModal.value = true;
   }
 }
 
-function openLoginWithMessage(msg) {
-  loginModalMsg.value = msg || '';
-  showLoginModal.value = true;
+function performLogout() {
+  api.logout();
+  authState.authenticated = false;
+  authState.user = null;
+  showToast(t('toastLoggedOut'));
 }
 
-function onLoginSuccess(user) {
+function openAuthModal(tab = 'login') {
+  authModalTab.value = tab;
+  showAuthModal.value = true;
+}
+
+function onAuthSuccess(user) {
   authState.authenticated = true;
   authState.user = user;
+  if (user?.orgSettings) {
+    applyUserOrgSettings(user.orgSettings);
+  }
+}
+
+async function saveOrgDefaults() {
+  const settings = {
+    templateId: formData.templateId,
+    orgName: formData.orgName,
+    orgSubtitle: formData.orgSubtitle,
+    orgLogo: formData.orgLogo,
+    slogan: formData.slogan,
+    heroQuote: formData.heroQuote,
+    quote: formData.quote
+  };
+  await api.saveSettings(settings);
+  showToast(currentLang.value === 'bn' ? 'সংগঠন ও লোগোর তথ্য সেভ হয়েছে!' : 'Organization branding & defaults saved!');
 }
 
 async function saveDonorRecord() {
   const res = await api.saveRecord(formData);
   if (res.success) {
     formData.id = res.record.id;
-    showToast('✅ রক্তদাতার রেকর্ড records.json ফাইলে সফলভাবে সংরক্ষিত হয়েছে!');
+    showToast(t('toastSaved'));
   } else {
-    showToast('⚠️ ' + (res.message || 'সেভ করা সম্ভব হয়নি।'));
+    showToast(res.message || 'Failed to save record.');
   }
 }
 
@@ -227,14 +298,15 @@ function loadRecord(rec) {
   formData.templateId = rec.templateId || 'bancharampur-classic';
   formData.donorName = rec.donorName || '';
   formData.bloodGroup = rec.bloodGroup || 'O+';
-  formData.donationCount = rec.donationCount || '১ম বার';
+  formData.donationCount = rec.donationCount || '1st Time';
   formData.donationDate = rec.donationDate || '';
   formData.referenceName = rec.referenceName || '';
-  formData.orgName = rec.orgName || 'BANCHARAMPUR BLOOD BANK';
-  formData.orgSubtitle = rec.orgSubtitle || 'বাঞ্ছারামপুর ব্লাড ব্যাংক';
-  formData.slogan = rec.slogan || 'রক্ত দেওয়ার জন্যেই আমরা';
-  formData.heroQuote = rec.heroQuote || 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে';
-  formData.quote = rec.quote || 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার';
+  if (rec.orgName) formData.orgName = rec.orgName;
+  if (rec.orgSubtitle) formData.orgSubtitle = rec.orgSubtitle;
+  if (rec.orgLogo) formData.orgLogo = rec.orgLogo;
+  if (rec.slogan) formData.slogan = rec.slogan;
+  if (rec.heroQuote) formData.heroQuote = rec.heroQuote;
+  if (rec.quote) formData.quote = rec.quote;
   if (rec.donorPhoto) {
     formData.donorPhoto = rec.donorPhoto;
   }
@@ -243,6 +315,20 @@ function loadRecord(rec) {
 </script>
 
 <style scoped>
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #ef4444;
+}
+
 @media (max-width: 1023px) {
   .mobile-hidden {
     display: none !important;

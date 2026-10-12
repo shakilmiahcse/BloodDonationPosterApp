@@ -1,56 +1,68 @@
 <template>
   <div class="glass-card editor-form-card">
     <div class="card-title-row">
-      <h2><span>🎨</span> পোস্টার এডিটর</h2>
-      <span class="active-tpl-badge">{{ currentTemplateName }}</span>
+      <h2><span>🎨</span> {{ t('editorTab') }}</h2>
+      <div class="title-action-group">
+        <!-- New Donor Entry Button (Keeps Org & Template) -->
+        <button 
+          type="button" 
+          class="btn btn-primary btn-sm btn-new-entry" 
+          @click="startNewDonorEntry"
+          :title="t('newEntryTooltip')"
+          id="btn-new-donor-entry"
+        >
+          <span>➕</span>
+          <span>{{ t('newEntryBtn') }}</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Template Selector Section -->
-    <div class="form-group">
-      <label class="form-label">
-        <span>১. টেমপ্লেট নির্বাচন করুন</span>
-        <span class="optional-tag">৫টি স্টাইল</span>
+    <!-- Compact Template Selector (Made much smaller as requested) -->
+    <div class="form-group compact-template-section">
+      <label class="form-label compact-label">
+        <span>{{ t('chooseTemplate') }}</span>
+        <span class="active-tpl-badge-compact">{{ currentTemplateName }}</span>
       </label>
 
-      <div class="templates-grid">
-        <div 
+      <div class="templates-grid-compact">
+        <button 
           v-for="tpl in templates" 
           :key="tpl.id"
-          class="template-card"
+          type="button"
+          class="template-card-compact"
           :class="{ active: formData.templateId === tpl.id }"
           @click="selectTemplate(tpl.id)"
           :id="'tpl-select-' + tpl.id"
         >
-          <div class="template-thumb-icon">{{ tpl.icon }}</div>
-          <div class="template-title">{{ tpl.name }}</div>
-          <div class="template-badge">{{ tpl.desc }}</div>
-        </div>
+          <span class="tpl-icon-compact">{{ tpl.icon }}</span>
+          <span class="tpl-name-compact">{{ t(tpl.nameKey) }}</span>
+        </button>
       </div>
     </div>
 
     <!-- Donor Information Section -->
     <div class="form-section-title">
-      <span>👤 রক্তদাতার বিবরণ</span>
+      <span>{{ t('donorDetailsSection') }}</span>
     </div>
 
     <!-- Donor Name -->
     <div class="form-group">
       <label class="form-label" for="input-donor-name">
-        <span>রক্তদাতার নাম <strong class="req">*</strong></span>
+        <span>{{ t('donorName') }} <strong class="req">*</strong></span>
       </label>
       <input 
         id="input-donor-name"
         type="text" 
         class="form-input" 
         v-model="formData.donorName" 
-        placeholder="উদা: মোঃ জামাল উদ্দিন"
+        :placeholder="t('donorNamePlaceholder')"
       />
     </div>
 
     <!-- Blood Group Picker -->
     <div class="form-group">
       <label class="form-label">
-        <span>রক্তের গ্রুপ <strong class="req">*</strong></span>
+        <span>{{ t('bloodGroup') }} <strong class="req">*</strong></span>
         <span class="sel-blood-val">{{ formData.bloodGroup }}</span>
       </label>
       <div class="blood-group-grid">
@@ -71,11 +83,11 @@
     <!-- Donation Count -->
     <div class="form-group">
       <label class="form-label">
-        <span>রক্তদানের সংখ্যা / কততম বার</span>
+        <span>{{ t('donationCount') }}</span>
       </label>
       <div class="count-chips-container">
         <button 
-          v-for="c in countPresets" 
+          v-for="c in activeCountPresets" 
           :key="c"
           type="button"
           class="chip-btn"
@@ -89,14 +101,14 @@
         type="text" 
         class="form-input" 
         v-model="formData.donationCount" 
-        placeholder="কাস্টম লিখুন: উদা: ১মবার, ১০মবার..."
+        :placeholder="t('donationCountPlaceholder')"
       />
     </div>
 
     <!-- Donation Date -->
     <div class="form-group">
       <label class="form-label" for="input-date">
-        <span>রক্তদানের তারিখ</span>
+        <span>{{ t('donationDate') }}</span>
       </label>
       <input 
         id="input-date"
@@ -106,25 +118,25 @@
       />
     </div>
 
-    <!-- Optional Reference Name (Requested specifically by user) -->
+    <!-- Reference Person (Optional) -->
     <div class="form-group highlight-box">
       <label class="form-label" for="input-reference">
-        <span>🤝 রেফারেন্স / সহযোগিতায় নাম</span>
-        <span class="optional-tag">ঐচ্ছিক (Optional)</span>
+        <span>🤝 {{ t('referenceLabel') }}</span>
+        <span class="optional-tag">{{ t('referenceOptional') }}</span>
       </label>
       <input 
         id="input-reference"
         type="text" 
         class="form-input" 
         v-model="formData.referenceName" 
-        placeholder="উদা: বাঞ্ছারামপুর ব্লাড ব্যাংক টিম / ডাঃ তরিকুল ইসলাম"
+        :placeholder="t('referencePlaceholder')"
       />
-      <span class="input-hint">পোস্টারের নিচে রেফারেন্স বা আয়োজকের নাম প্রদর্শিত হবে। ফাঁকা রাখলে দেখানো হবে না।</span>
+      <span class="input-hint">{{ t('referenceHint') }}</span>
     </div>
 
     <!-- Donor Photo Upload & Adjust -->
     <div class="form-section-title">
-      <span>📷 রক্তদাতার ছবি</span>
+      <span>{{ t('photoSection') }}</span>
     </div>
 
     <div class="form-group">
@@ -138,19 +150,19 @@
         />
         <div v-if="formData.donorPhoto" class="photo-preview-wrap">
           <img :src="formData.donorPhoto" alt="Preview" class="photo-preview-thumbnail" />
-          <p class="photo-upload-prompt">ছবি পরিবর্তন করতে ক্লিক করুন</p>
+          <p class="photo-upload-prompt">{{ t('changePhotoPrompt') }}</p>
         </div>
         <div v-else class="upload-placeholder">
           <div class="upload-icon">📸</div>
-          <p class="photo-upload-prompt">ছবি নির্বাচন করুন (ক্যামেরা বা গ্যালারি)</p>
-          <span class="upload-sub">মোবাইল থেকে সরাসরি ছবি আপলোড করা যাবে</span>
+          <p class="photo-upload-prompt">{{ t('uploadPhotoPrompt') }}</p>
+          <span class="upload-sub">{{ t('mobileUploadHint') }}</span>
         </div>
       </div>
 
       <!-- Photo Controls (Zoom & Pan) -->
       <div v-if="formData.donorPhoto" class="photo-adjustments">
         <div class="photo-controls-row">
-          <label>জুম:</label>
+          <label>{{ t('zoomLabel') }}</label>
           <input 
             type="range" 
             min="0.8" 
@@ -162,7 +174,7 @@
         </div>
 
         <div class="photo-controls-row">
-          <label>উপরে/নিচে:</label>
+          <label>{{ t('panYLabel') }}</label>
           <input 
             type="range" 
             min="-100" 
@@ -170,68 +182,113 @@
             step="2" 
             v-model.number="formData.photoPanY" 
           />
-          <button class="btn btn-secondary btn-sm" @click="resetPhotoAlign">রিসেট</button>
+          <button type="button" class="btn btn-secondary btn-sm" @click="resetPhotoAlign">
+            {{ t('resetAlign') }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Organization & Motivational Quotes Section -->
+    <!-- Organization Branding & Logo Section -->
     <div class="form-section-title">
-      <span>🏛️ সংগঠন ও অনুপ্রেরণামূলক বাণী</span>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" for="input-quote-preset">
-        <span>অনুপ্রেরণামূলক উক্তি নির্বাচন</span>
-      </label>
-      <select 
-        id="input-quote-preset" 
-        class="form-select" 
-        @change="onQuotePresetChange"
+      <span>{{ t('orgSection') }}</span>
+      <button 
+        v-if="authState.authenticated" 
+        type="button" 
+        class="btn-save-org-mini" 
+        @click="$emit('save-org-defaults')"
+        title="সংগঠন ও লোগো সবসময় মনে রাখার জন্য সেভ করুন"
       >
-        <option value="">উক্তি পছন্দ করুন...</option>
-        <option v-for="(q, idx) in quotesList" :key="idx" :value="q">
-          {{ q }}
-        </option>
-      </select>
+        💾 {{ t('saveOrgSettingsBtn') }}
+      </button>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="input-custom-quote">
-        <span>উক্তি / স্লোগান (কাস্টম)</span>
-      </label>
-      <input 
-        id="input-custom-quote"
-        type="text" 
-        class="form-input" 
-        v-model="formData.quote" 
-        placeholder="রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার"
-      />
+    <!-- Organization Logo Upload Box -->
+    <div class="form-group org-logo-upload-group">
+      <label class="form-label">{{ t('orgLogoLabel') }}</label>
+      <div class="org-logo-control-row">
+        <div class="org-logo-preview-box">
+          <img :src="formData.orgLogo || defaultOrgLogo" alt="Org Logo" class="org-logo-thumb" />
+        </div>
+        <div class="org-logo-btns">
+          <input 
+            type="file" 
+            ref="logoFileInput" 
+            accept="image/*" 
+            class="hidden-file-input" 
+            @change="handleLogoUpload"
+          />
+          <button type="button" class="btn btn-secondary btn-sm" @click="triggerLogoInput">
+            📤 {{ t('uploadLogoPrompt') }}
+          </button>
+          <button 
+            v-if="formData.orgLogo && formData.orgLogo !== defaultOrgLogo" 
+            type="button" 
+            class="btn btn-secondary btn-sm" 
+            @click="resetLogoToDefault"
+          >
+            🔄 {{ t('resetLogoPrompt') }}
+          </button>
+        </div>
+      </div>
     </div>
 
+    <!-- Organization Name -->
     <div class="form-group">
       <label class="form-label" for="input-org-name">
-        <span>সংস্থার নাম (ইংরেজি)</span>
+        <span>{{ t('orgNameLabel') }}</span>
       </label>
       <input 
         id="input-org-name"
         type="text" 
         class="form-input" 
         v-model="formData.orgName" 
-        placeholder="BANCHARAMPUR BLOOD BANK"
+        :placeholder="t('orgNamePlaceholder')"
       />
     </div>
 
+    <!-- Organization Slogan / Subtitle -->
     <div class="form-group">
-      <label class="form-label" for="input-org-bn">
-        <span>সংস্থার নাম (বাংলা)</span>
+      <label class="form-label" for="input-org-subtitle">
+        <span>{{ t('orgSubtitleLabel') }}</span>
       </label>
       <input 
-        id="input-org-bn"
+        id="input-org-subtitle"
         type="text" 
         class="form-input" 
         v-model="formData.orgSubtitle" 
-        placeholder="বাঞ্ছারামপুর ব্লাড ব্যাংক"
+        :placeholder="t('orgSubtitlePlaceholder')"
+      />
+    </div>
+
+    <!-- Motivational Quotes Presets -->
+    <div class="form-group">
+      <label class="form-label" for="input-quote-preset">
+        <span>{{ t('quotePresetLabel') }}</span>
+      </label>
+      <select 
+        id="input-quote-preset" 
+        class="form-select" 
+        @change="onQuotePresetChange"
+      >
+        <option value="">{{ t('selectQuotePrompt') }}</option>
+        <option v-for="(q, idx) in activeQuotesList" :key="idx" :value="q">
+          {{ q }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Custom Quote -->
+    <div class="form-group">
+      <label class="form-label" for="input-custom-quote">
+        <span>{{ t('customQuoteLabel') }}</span>
+      </label>
+      <input 
+        id="input-custom-quote"
+        type="text" 
+        class="form-input" 
+        v-model="formData.quote" 
+        :placeholder="t('customQuotePlaceholder')"
       />
     </div>
   </div>
@@ -239,44 +296,47 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { t, currentLang, quotePresets, countPresets } from '../utils/i18n';
 
 const props = defineProps({
   formData: {
     type: Object,
     required: true
+  },
+  authState: {
+    type: Object,
+    required: true
   }
 });
 
-const emit = defineEmits(['notify']);
+const emit = defineEmits(['notify', 'save-org-defaults', 'new-entry']);
 
 const fileInput = ref(null);
+const logoFileInput = ref(null);
+const defaultOrgLogo = '/default_org_logo.png';
 
+// Facebook PhotoCard styles
 const templates = [
-  { id: 'bancharampur-classic', name: 'বাঞ্ছারামপুর ক্লাসিক', icon: '🩸', desc: 'অরিজিনাল স্যাম্পল' },
-  { id: 'modern', name: 'মডার্ন ক্রিস্টাল', icon: '✨', desc: 'ডার্ক ও নিয়ন' },
-  { id: 'certificate', name: 'সম্মাননা সনদ', icon: '📜', desc: 'কৃতজ্ঞতা স্মারক' },
-  { id: 'story', name: 'সোশ্যাল স্টোরি', icon: '📱', desc: 'WhatsApp & FB' },
-  { id: 'minimal', name: 'মিনিমাল ক্লিন', icon: '🤍', desc: 'প্রিন্ট ও সিম্পল' }
+  { id: 'bancharampur-classic', nameKey: 'tplHero', icon: '🩸', descKey: 'tplHeroDesc' },
+  { id: 'modern', nameKey: 'tplTribute', icon: '✨', descKey: 'tplTributeDesc' },
+  { id: 'certificate', nameKey: 'tplCertificate', icon: '📜', descKey: 'tplCertificateDesc' },
+  { id: 'story', nameKey: 'tplStory', icon: '📱', descKey: 'tplStoryDesc' },
+  { id: 'minimal', nameKey: 'tplEditorial', icon: '📰', descKey: 'tplEditorialDesc' }
 ];
 
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-const countPresets = [
-  '১ম বার', '২য় বার', '৩য় বার', '৪র্থ বার', '৫ম বার', '১০ম বার', '২৫তম বার', '৫০তম বার'
-];
+const activeCountPresets = computed(() => {
+  return countPresets[currentLang.value] || countPresets.en;
+});
 
-const quotesList = [
-  'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার',
-  'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে',
-  'আপনার রক্তে বাঁচুক একটি মূল্যবান প্রাণ',
-  'রক্ত দিন, জীবন বাঁচান - মানবতার সেবায় এগিয়ে আসুন',
-  'এক ব্যাগ রক্ত, একটি সুন্দর হাসিমুখ',
-  'রক্তদানের চেয়ে বড় মানবসেবা আর নেই'
-];
+const activeQuotesList = computed(() => {
+  return quotePresets[currentLang.value] || quotePresets.en;
+});
 
 const currentTemplateName = computed(() => {
   const found = templates.find(t => t.id === props.formData.templateId);
-  return found ? found.name : 'ক্লাসিক';
+  return found ? t(found.nameKey) : '';
 });
 
 function selectTemplate(id) {
@@ -284,9 +344,11 @@ function selectTemplate(id) {
 }
 
 function triggerFileInput() {
-  if (fileInput.value) {
-    fileInput.value.click();
-  }
+  if (fileInput.value) fileInput.value.click();
+}
+
+function triggerLogoInput() {
+  if (logoFileInput.value) logoFileInput.value.click();
 }
 
 function handlePhotoUpload(e) {
@@ -294,7 +356,7 @@ function handlePhotoUpload(e) {
   if (!file) return;
 
   if (!file.type.startsWith('image/')) {
-    emit('notify', 'অনুগ্রহ করে একটি ছবি ফাইল নির্বাচন করুন!');
+    emit('notify', currentLang.value === 'bn' ? 'অনুগ্রহ করে একটি ছবি ফাইল নির্বাচন করুন!' : 'Please select an image file!');
     return;
   }
 
@@ -304,9 +366,32 @@ function handlePhotoUpload(e) {
     props.formData.photoZoom = 1;
     props.formData.photoPanX = 0;
     props.formData.photoPanY = 0;
-    emit('notify', 'ছবি সফলভাবে লোড হয়েছে!');
+    emit('notify', t('toastPhotoLoaded'));
   };
   reader.readAsDataURL(file);
+}
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    props.formData.orgLogo = event.target.result;
+    emit('notify', t('toastLogoLoaded'));
+    if (props.authState.authenticated) {
+      emit('save-org-defaults');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetLogoToDefault() {
+  props.formData.orgLogo = defaultOrgLogo;
+  emit('notify', currentLang.value === 'bn' ? 'ডিফল্ট লোগো রিসেট হয়েছে!' : 'Reset to default logo!');
+  if (props.authState.authenticated) {
+    emit('save-org-defaults');
+  }
 }
 
 function resetPhotoAlign() {
@@ -319,6 +404,22 @@ function onQuotePresetChange(e) {
   if (e.target.value) {
     props.formData.quote = e.target.value;
   }
+}
+
+function startNewDonorEntry() {
+  // Clears ONLY personal details:
+  // Keeps organization name, subtitle, slogan, quotes, logo, and chosen template!
+  props.formData.id = '';
+  props.formData.donorName = '';
+  props.formData.bloodGroup = 'O+';
+  props.formData.donationCount = currentLang.value === 'bn' ? '১ম বার' : '1st Time';
+  props.formData.donationDate = new Date().toISOString().split('T')[0];
+  props.formData.referenceName = '';
+  props.formData.donorPhoto = '';
+  props.formData.photoZoom = 1;
+  props.formData.photoPanX = 0;
+  props.formData.photoPanY = 0;
+  emit('notify', t('toastClearedPersonal'));
 }
 </script>
 
@@ -334,25 +435,141 @@ function onQuotePresetChange(e) {
   }
 }
 
-.active-tpl-badge {
-  font-size: 0.75rem;
-  background: rgba(220, 38, 38, 0.2);
+.title-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-new-entry {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: var(--radius-sm);
+}
+
+/* Compact Template Section (Much smaller vertical height) */
+.compact-template-section {
+  margin-bottom: 1rem;
+}
+
+.compact-label {
+  margin-bottom: 0.4rem;
+}
+
+.active-tpl-badge-compact {
+  font-size: 0.72rem;
+  background: rgba(239, 68, 68, 0.2);
   color: #fca5a5;
-  padding: 0.2rem 0.6rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(220, 38, 38, 0.35);
+  border: 1px solid rgba(239, 68, 68, 0.4);
   font-weight: 700;
 }
 
-.form-section-title {
+.templates-grid-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.template-card-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.template-card-compact:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.template-card-compact.active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.5));
+  border-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.tpl-icon-compact {
   font-size: 0.95rem;
+}
+
+/* Form Section Title */
+.form-section-title {
+  font-size: 0.92rem;
   font-weight: 700;
   color: #fca5a5;
-  margin: 1.25rem 0 0.75rem;
-  padding-bottom: 0.4rem;
+  margin: 1.1rem 0 0.65rem;
+  padding-bottom: 0.35rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.btn-save-org-mini {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fef08a;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-save-org-mini:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fef08a;
+}
+
+/* Org Logo Control */
+.org-logo-control-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.org-logo-preview-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ef4444;
+  background: #ffffff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.org-logo-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.org-logo-btns {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
 }
 
@@ -376,9 +593,10 @@ function onQuotePresetChange(e) {
 
 .input-hint {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   margin-top: 0.35rem;
+  line-height: 1.3;
 }
 
 .hidden-file-input {

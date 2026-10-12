@@ -1,58 +1,61 @@
 <template>
-  <div class="minimal-poster">
-    <!-- Top Bar -->
+  <div class="editorial-card-root">
     <div class="top-red-stripe"></div>
 
-    <!-- Header -->
-    <header class="min-header">
-      <div class="min-titles">
-        <h1 class="min-org">{{ data.orgSubtitle || data.orgName || 'বাঞ্ছারামপুর ব্লাড ব্যাংক' }}</h1>
-        <p class="min-slogan">{{ data.heroQuote || '“রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে”' }}</p>
+    <!-- Header with Circular Org Logo -->
+    <header class="ed-header">
+      <div class="ed-brand-group">
+        <img :src="data.orgLogo || defaultOrgLogo" alt="Logo" class="ed-logo-img" />
+        <div class="ed-titles">
+          <h1 class="ed-org-title">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</h1>
+          <p class="ed-slogan-line">“{{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Beside critical patients in need of blood') }}”</p>
+        </div>
       </div>
 
       <!-- Blood Group Minimal Box -->
-      <div class="min-blood-box">
-        <span class="blood-label">গ্রুপ</span>
+      <div class="ed-blood-box">
+        <span class="blood-label">{{ isBn ? 'রক্তের গ্রুপ' : 'BLOOD' }}</span>
         <span class="blood-val">{{ data.bloodGroup || 'O+' }}</span>
       </div>
     </header>
 
     <!-- Body Layout -->
-    <main class="min-body">
+    <main class="ed-body">
       <!-- Framed Photo -->
-      <div class="min-photo-wrap">
+      <div class="ed-photo-wrap">
         <div class="photo-box">
           <img 
-            :src="data.donorPhoto || defaultPhoto" 
-            alt="রক্তদাতা" 
-            class="min-photo"
+            :src="data.donorPhoto || defaultDonorPhoto" 
+            alt="Donor" 
+            class="ed-photo"
             :style="{
               transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
             }"
           />
         </div>
-        <div class="min-count-tag">
-          {{ data.donationCount || '১ম বার' }} রক্তদান
+        <div class="ed-count-tag">
+          {{ data.donationCount || (isBn ? '১ম বার রক্তদান' : '1st Blood Donation') }}
         </div>
       </div>
 
       <!-- Details -->
-      <div class="min-details">
-        <div class="donor-designation">শ্রদ্ধেয় রক্তদাতা</div>
-        <h2 class="min-donor-name">{{ data.donorName || 'মোঃ জামাল উদ্দিন' }}</h2>
+      <div class="ed-details">
+        <div class="donor-designation">{{ isBn ? '— সম্মানিত রক্তদাতা —' : '— HONORABLE BLOOD DONOR —' }}</div>
+        <h2 class="ed-donor-name">{{ data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name') }}</h2>
         
-        <p class="min-quote">
-          “{{ data.quote || 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' }}”
+        <p class="ed-quote">
+          “{{ data.quote || (isBn ? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' : 'Blood donation is the greatest gift of life') }}”
         </p>
 
-        <div class="min-meta-grid">
-          <div class="min-meta-card">
-            <span class="meta-label">তারিখ:</span>
+        <div class="ed-meta-grid">
+          <div class="ed-meta-card">
+            <span class="meta-label">{{ isBn ? 'তারিখ:' : 'Date:' }}</span>
             <span class="meta-val">{{ formattedDate }}</span>
           </div>
 
-          <div v-if="data.referenceName" class="min-meta-card ref-card">
-            <span class="meta-label">রেফারেন্স:</span>
+          <!-- Strictly rendered ONLY if referenceName has content -->
+          <div v-if="hasReference" class="ed-meta-card ref-card">
+            <span class="meta-label">{{ isBn ? 'সংগ্রাহক / রেফারেন্স:' : 'Referred By:' }}</span>
             <span class="meta-val">{{ data.referenceName }}</span>
           </div>
         </div>
@@ -60,14 +63,15 @@
     </main>
 
     <!-- Footer -->
-    <footer class="min-footer">
-      <div class="footer-msg">❤️ আপনার এক ব্যাগ রক্ত বাঁচিয়েছে একটি মূল্যবান প্রাণ। কৃতজ্ঞতা ও শুভকামনা।</div>
+    <footer class="ed-footer">
+      <div class="footer-msg">❤️ {{ isBn ? 'আপনার এক ব্যাগ রক্ত বাঁচিয়েছে একটি মূল্যবান প্রাণ। কৃতজ্ঞতা ও শুভকামনা।' : 'Your donation has saved a valuable human life. With deep gratitude and best wishes.' }}</div>
     </footer>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
 
 const props = defineProps({
@@ -77,24 +81,33 @@ const props = defineProps({
   }
 });
 
-const defaultPhoto = '/sample_donor.jfif';
+const defaultOrgLogo = '/default_org_logo.png';
+const defaultDonorPhoto = '/sample_donor.jfif';
+const isBn = computed(() => currentLang.value === 'bn');
+
+const hasReference = computed(() => {
+  return typeof props.data.referenceName === 'string' && props.data.referenceName.trim().length > 0;
+});
 
 const formattedDate = computed(() => {
-  if (!props.data.donationDate) return '০৭-১০-২০২৬';
-  return formatBengaliDate(props.data.donationDate, 'bengali-digits');
+  if (!props.data.donationDate) return '07-10-2026';
+  if (isBn.value) {
+    return formatBengaliDate(props.data.donationDate, 'bengali-digits');
+  }
+  return props.data.donationDate;
 });
 </script>
 
 <style scoped>
-.minimal-poster {
+.editorial-card-root {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4.15;
+  aspect-ratio: 4 / 5.2;
   background: #ffffff;
   color: #0f172a;
-  padding: 1.5rem;
+  padding: 1.2rem;
   box-sizing: border-box;
-  font-family: 'Hind Siliguri', sans-serif;
+  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -111,39 +124,62 @@ const formattedDate = computed(() => {
   background: linear-gradient(90deg, #ef4444, #991b1b);
 }
 
-.min-header {
+.ed-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem;
+  padding-bottom: 0.8rem;
   border-bottom: 2px solid #f1f5f9;
+  gap: 0.8rem;
 }
 
-.min-org {
-  font-size: 1.4rem;
+.ed-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.ed-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 2px solid #ef4444;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.ed-titles {
+  flex: 1;
+}
+
+.ed-org-title {
+  font-size: 1.2rem;
   font-weight: 800;
   color: #991b1b;
   line-height: 1.2;
 }
 
-.min-slogan {
-  font-size: 0.85rem;
+.ed-slogan-line {
+  font-size: 0.78rem;
   font-weight: 600;
   color: #64748b;
   margin-top: 0.15rem;
 }
 
-.min-blood-box {
+.ed-blood-box {
   background: #fee2e2;
   border: 2px solid #ef4444;
   border-radius: 12px;
   padding: 0.35rem 0.8rem;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .blood-label {
   display: block;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: #991b1b;
   line-height: 1;
@@ -157,24 +193,23 @@ const formattedDate = computed(() => {
   line-height: 1;
 }
 
-/* Body */
-.min-body {
+.ed-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1rem 0;
+  margin: 0.8rem 0;
 }
 
-.min-photo-wrap {
+.ed-photo-wrap {
   position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .photo-box {
-  width: 200px;
-  height: 220px;
+  width: 210px;
+  height: 230px;
   border-radius: 14px;
   overflow: hidden;
   border: 3px solid #0f172a;
@@ -182,13 +217,13 @@ const formattedDate = computed(() => {
   background: #f1f5f9;
 }
 
-.min-photo {
+.ed-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.min-count-tag {
+.ed-count-tag {
   position: absolute;
   bottom: -10px;
   left: 50%;
@@ -202,48 +237,48 @@ const formattedDate = computed(() => {
   white-space: nowrap;
 }
 
-.min-details {
+.ed-details {
   text-align: center;
   width: 100%;
 }
 
 .donor-designation {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #ef4444;
   font-weight: 700;
 }
 
-.min-donor-name {
-  font-size: 1.65rem;
+.ed-donor-name {
+  font-size: 1.6rem;
   font-weight: 800;
   color: #0f172a;
   line-height: 1.2;
   margin: 0.15rem 0;
 }
 
-.min-quote {
-  font-size: 0.9rem;
+.ed-quote {
+  font-size: 0.88rem;
   color: #475569;
   font-style: italic;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
 }
 
-.min-meta-grid {
+.ed-meta-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.6rem;
 }
 
-.min-meta-card {
+.ed-meta-card {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 0.35rem 0.75rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .meta-label {
@@ -263,11 +298,10 @@ const formattedDate = computed(() => {
 .ref-card .meta-label { color: #854d0e; }
 .ref-card .meta-val { color: #713f12; }
 
-/* Footer */
-.min-footer {
+.ed-footer {
   text-align: center;
   border-top: 1px dashed #cbd5e1;
-  padding-top: 0.6rem;
+  padding-top: 0.5rem;
 }
 
 .footer-msg {

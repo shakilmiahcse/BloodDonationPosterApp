@@ -8,24 +8,27 @@
       <div class="corner corner-bl">❖</div>
       <div class="corner corner-br">❖</div>
 
-      <!-- Header -->
+      <!-- Header with Circular Org Logo -->
       <header class="cert-header">
-        <div class="cert-badge">🏅 সম্মাননা ও কৃতজ্ঞতা স্মারক</div>
-        <h1 class="cert-org-name">{{ data.orgSubtitle || data.orgName || 'বাঞ্ছারামপুর ব্লাড ব্যাংক' }}</h1>
-        <p class="cert-motto">{{ data.heroQuote || '“রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে”' }}</p>
+        <div class="cert-logo-row">
+          <img :src="data.orgLogo || defaultOrgLogo" alt="Logo" class="cert-org-logo" />
+        </div>
+        <div class="cert-badge">🏅 {{ isBn ? 'সম্মাননা ও কৃতজ্ঞতা স্মারক' : 'CERTIFICATE OF HONOR & GRATITUDE' }}</div>
+        <h1 class="cert-org-name">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</h1>
+        <p v-if="data.heroQuote" class="cert-motto">“{{ data.heroQuote }}”</p>
       </header>
 
       <!-- Body -->
       <main class="cert-body">
-        <div class="cert-intro">মানবতার কল্যাণে নিঃস্বার্থ রক্তদানের জন্য পরম শ্রদ্ধায় নিবেদিত</div>
+        <div class="cert-intro">{{ isBn ? 'মানবতার কল্যাণে নিঃস্বার্থ রক্তদানের জন্য পরম শ্রদ্ধায় নিবেদিত' : 'Presented with deep respect and appreciation for selfless voluntary blood donation' }}</div>
 
         <!-- Center Layout: Photo & Official Seal -->
         <div class="cert-center-row">
           <div class="cert-photo-wrapper">
             <div class="cert-photo-frame">
               <img 
-                :src="data.donorPhoto || defaultPhoto" 
-                alt="রক্তদাতা" 
+                :src="data.donorPhoto || defaultDonorPhoto" 
+                alt="Donor" 
                 class="cert-photo"
                 :style="{
                   transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
@@ -33,29 +36,29 @@
               />
             </div>
             <div class="cert-count-ribbon">
-              {{ data.donationCount || '১ম বার' }} রক্তদান সম্পন্ন
+              {{ data.donationCount || (isBn ? '১ম বার রক্তদান সম্পন্ন' : '1st Blood Donation') }}
             </div>
           </div>
 
           <!-- Blood Group Stamp / Seal -->
           <div class="cert-seal">
             <div class="seal-inner">
-              <div class="seal-text-top">ব্লাড গ্রুপ</div>
+              <div class="seal-text-top">{{ isBn ? 'ব্লাড গ্রুপ' : 'BLOOD GROUP' }}</div>
               <div class="seal-group">{{ data.bloodGroup || 'O+' }}</div>
-              <div class="seal-text-bottom">★ প্রমাণিত ★</div>
+              <div class="seal-text-bottom">★ {{ isBn ? 'প্রমাণিত' : 'VERIFIED' }} ★</div>
             </div>
           </div>
         </div>
 
         <!-- Donor Honorific Title -->
         <div class="donor-name-box">
-          <div class="honor-prefix">সম্মানিত রক্তযোদ্ধা</div>
-          <h2 class="honor-name">{{ data.donorName || 'মোঃ জামাল উদ্দিন' }}</h2>
+          <div class="honor-prefix">{{ isBn ? 'সম্মানিত রক্তযোদ্ধা' : 'Honorable Blood Donor' }}</div>
+          <h2 class="honor-name">{{ data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name') }}</h2>
         </div>
 
         <!-- Certificate Declaration Message -->
         <p class="cert-statement">
-          আপনার দানকৃত অমূল্য রক্ত একটি মুমূর্ষু প্রাণের বাঁচার নতুন আশা যুগিয়েছে। আপনার এই মহৎ আত্মত্যাগকে স্মরণীয় করে রাখতে আমাদের এই বিনম্র শ্রদ্ধাঞ্জলি।
+          {{ isBn ? 'আপনার দানকৃত অমূল্য রক্ত একটি মুমূর্ষু প্রাণের বাঁচার নতুন আশা যুগিয়েছে। আপনার এই মহৎ আত্মত্যাগকে স্মরণীয় করে রাখতে আমাদের এই বিনম্র শ্রদ্ধাঞ্জলি।' : 'Your noble contribution of life-saving blood brings new hope to patients in need. We express our heartfelt gratitude for your heroic generosity.' }}
         </p>
       </main>
 
@@ -64,18 +67,18 @@
         <div class="sign-block left">
           <div class="sign-val">{{ formattedDate }}</div>
           <div class="sign-line"></div>
-          <div class="sign-title">রক্তদানের তারিখ</div>
+          <div class="sign-title">{{ isBn ? 'রক্তদানের তারিখ' : 'Date of Donation' }}</div>
         </div>
 
         <div class="sign-block center">
           <div class="stamp-icon">🩸</div>
-          <div class="stamp-motto">{{ data.quote || 'রক্তদান জীবনের শ্রেষ্ঠ উপহার' }}</div>
+          <div class="stamp-motto">{{ data.quote || (isBn ? 'রক্তদান জীবনের শ্রেষ্ঠ উপহার' : 'The Greatest Gift of Life') }}</div>
         </div>
 
         <div class="sign-block right">
-          <div class="sign-val">{{ data.referenceName || data.orgSubtitle || 'কর্তৃপক্ষ' }}</div>
+          <div class="sign-val">{{ hasReference ? data.referenceName : (data.orgName || 'কর্তৃপক্ষ') }}</div>
           <div class="sign-line"></div>
-          <div class="sign-title">{{ data.referenceName ? 'রেফারেন্স / সহযোগিতায়' : 'স্বাক্ষর ও পরিচালনা' }}</div>
+          <div class="sign-title">{{ hasReference ? (isBn ? 'রেফারেন্স / সংগ্রাহক' : 'Referred By') : (isBn ? 'স্বাক্ষর ও পরিচালনা' : 'Authorized Signature') }}</div>
         </div>
       </footer>
     </div>
@@ -84,6 +87,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
 
 const props = defineProps({
@@ -93,11 +97,20 @@ const props = defineProps({
   }
 });
 
-const defaultPhoto = '/sample_donor.jfif';
+const defaultOrgLogo = '/default_org_logo.png';
+const defaultDonorPhoto = '/sample_donor.jfif';
+const isBn = computed(() => currentLang.value === 'bn');
+
+const hasReference = computed(() => {
+  return typeof props.data.referenceName === 'string' && props.data.referenceName.trim().length > 0;
+});
 
 const formattedDate = computed(() => {
-  if (!props.data.donationDate) return '০৭ অক্টোবর, ২০২৬';
-  return formatBengaliDate(props.data.donationDate, 'full');
+  if (!props.data.donationDate) return '07-10-2026';
+  if (isBn.value) {
+    return formatBengaliDate(props.data.donationDate, 'full');
+  }
+  return props.data.donationDate;
 });
 </script>
 
@@ -110,7 +123,7 @@ const formattedDate = computed(() => {
   color: #1e293b;
   padding: 1rem;
   box-sizing: border-box;
-  font-family: 'Hind Siliguri', serif;
+  font-family: 'Hind Siliguri', 'Outfit', serif;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -119,7 +132,7 @@ const formattedDate = computed(() => {
   border: 4px double #b91c1c;
   outline: 1px solid #d97706;
   outline-offset: -8px;
-  padding: 1.25rem 1.4rem;
+  padding: 1.1rem 1.3rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -139,41 +152,52 @@ const formattedDate = computed(() => {
 .corner-bl { bottom: 12px; left: 12px; }
 .corner-br { bottom: 12px; right: 12px; }
 
-/* Header */
 .cert-header {
   text-align: center;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+}
+
+.cert-logo-row {
+  margin-bottom: 0.3rem;
+}
+
+.cert-org-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid #b91c1c;
+  background: #fff;
 }
 
 .cert-badge {
   display: inline-block;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #991b1b;
   letter-spacing: 0.5px;
   background: rgba(185, 28, 28, 0.08);
-  padding: 0.2rem 0.8rem;
+  padding: 0.15rem 0.75rem;
   border-radius: 999px;
   border: 1px solid rgba(185, 28, 28, 0.2);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .cert-org-name {
-  font-family: 'Tiro Bangla', serif;
-  font-size: 1.55rem;
+  font-family: 'Tiro Bangla', 'Outfit', serif;
+  font-size: 1.45rem;
   font-weight: 700;
   color: #7f1d1d;
   line-height: 1.2;
 }
 
 .cert-motto {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-style: italic;
   color: #475569;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
-/* Body */
 .cert-body {
   flex: 1;
   display: flex;
@@ -181,13 +205,13 @@ const formattedDate = computed(() => {
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin: 0.5rem 0;
+  margin: 0.3rem 0;
 }
 
 .cert-intro {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
 }
 
 .cert-center-row {
@@ -195,7 +219,7 @@ const formattedDate = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
 }
 
 .cert-photo-wrapper {
@@ -206,8 +230,8 @@ const formattedDate = computed(() => {
 }
 
 .cert-photo-frame {
-  width: 155px;
-  height: 180px;
+  width: 145px;
+  height: 170px;
   border: 4px solid #b91c1c;
   box-shadow: 0 4px 14px rgba(0,0,0,0.2);
   border-radius: 8px;
@@ -226,7 +250,7 @@ const formattedDate = computed(() => {
   bottom: -10px;
   background: #b91c1c;
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   padding: 0.15rem 0.75rem;
   border-radius: 999px;
@@ -235,10 +259,9 @@ const formattedDate = computed(() => {
   white-space: nowrap;
 }
 
-/* Seal */
 .cert-seal {
-  width: 95px;
-  height: 95px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   border: 3px dashed #b91c1c;
   padding: 4px;
@@ -262,54 +285,53 @@ const formattedDate = computed(() => {
 }
 
 .seal-text-top {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 600;
 }
 
 .seal-group {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 900;
   line-height: 1;
 }
 
 .seal-text-bottom {
-  font-size: 0.5rem;
+  font-size: 0.48rem;
   letter-spacing: 0.5px;
 }
 
 .donor-name-box {
-  margin: 0.6rem 0 0.4rem;
+  margin: 0.5rem 0 0.3rem;
 }
 
 .honor-prefix {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #991b1b;
   font-weight: 600;
 }
 
 .honor-name {
-  font-family: 'Tiro Bangla', serif;
-  font-size: 1.8rem;
+  font-family: 'Tiro Bangla', 'Outfit', serif;
+  font-size: 1.7rem;
   font-weight: 700;
   color: #7f1d1d;
   line-height: 1.2;
 }
 
 .cert-statement {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #334155;
   max-width: 420px;
-  line-height: 1.4;
-  margin-top: 0.4rem;
+  line-height: 1.35;
+  margin-top: 0.3rem;
 }
 
-/* Footer */
 .cert-footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding-top: 0.8rem;
+  padding-top: 0.6rem;
 }
 
 .sign-block {
@@ -318,7 +340,7 @@ const formattedDate = computed(() => {
 }
 
 .sign-val {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 0.2rem;
@@ -332,7 +354,7 @@ const formattedDate = computed(() => {
 }
 
 .sign-title {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: #64748b;
   font-weight: 600;
 }
@@ -343,12 +365,12 @@ const formattedDate = computed(() => {
 }
 
 .stamp-icon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
 .stamp-motto {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: #991b1b;
   font-weight: 600;
 }

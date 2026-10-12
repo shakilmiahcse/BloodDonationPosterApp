@@ -1,37 +1,70 @@
-// Client-side API layer for authentication and record storage
+// Client-side API layer for authentication and multi-user record storage
 const API_BASE = window.location.pathname.includes('/dist/') 
   ? '../api.php' 
   : (window.location.port === '5173' ? '/api.php' : 'api.php');
 
-const AUTH_STORAGE_KEY = 'blood_auth_state';
-const LOCAL_RECORDS_KEY = 'blood_donation_local_records';
+const TOKEN_KEY = 'blood_auth_token';
+const USER_KEY = 'blood_auth_user';
 
 export const api = {
   // Check auth state
   async checkAuth() {
     try {
-      const token = localStorage.getItem('blood_token');
+      const token = localStorage.getItem(TOKEN_KEY);
       const res = await fetch(`${API_BASE}?action=check_auth`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (res.ok) {
         const data = await res.json();
-        return {
-          authenticated: !!data.authenticated,
-          user: data.user
-        };
+        if (data.authenticated && data.user) {
+          localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+          return { authenticated: true, user: data.user };
+        }
       }
     } catch (e) {
-      console.warn('Backend API not reachable, checking localStorage fallback:', e);
+      console.warn('API server unreachable, fallback to stored session:', e);
     }
-    // Fallback
-    const saved = localStorage.getItem(AUTH_STORAGE_KEY);
+    const saved = localStorage.getItem(USER_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return { authenticated: true, user: JSON.parse(saved) };
       } catch (err) {}
     }
     return { authenticated: false, user: null };
+  },
+
+  // Register
+  async register(registrationData) {
+    try {
+      const res = await fetch(`${API_BASE}?action=register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registrationData)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+        if (data.user) localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        return { success: true, user: data.user, message: data.message };
+      } else {
+        return { success: false, message: data.message || 'Registration failed.' };
+      }
+    } catch (e) {
+      // Offline fallback registration
+      const user = {
+        id: 'usr_' + Date.now(),
+        name: registrationData.name,
+        username: registrationData.username,
+        orgSettings: {
+          orgName: registrationData.orgName || '',
+          orgSubtitle: registrationData.orgSubtitle || '',
+          templateId: registrationData.templateId || 'bancharampur-classic'
+        }
+      };
+      localStorage.setItem(TOKEN_KEY, 'offline_token_' + user.id);
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      return { success: true, user, message: 'Account created successfully!' };
+    }
   },
 
   // Login
@@ -44,39 +77,70 @@ export const api = {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        localStorage.setItem('blood_token', data.token || 'blood_token_authenticated');
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ authenticated: true, user: data.user }));
+        if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+        if (data.user) localStorage.setItem(USER_KEY, JSON.stringify(data.user));
         return { success: true, user: data.user, message: data.message };
       } else {
-        return { success: false, message: data.message || 'ভুল ইউজারনেম বা পাসওয়ার্ড!' };
+        return { success: false, message: data.message || 'Invalid username or password.' };
       }
     } catch (e) {
-      console.warn('Using client-side fallback login for demo/offline:', e);
-      // Demo login fallback if server isn't running php
-      if (username === 'admin' && (password === 'blood1234' || password === 'admin')) {
-        const user = { username: 'admin', name: 'অ্যাডমিন (ব্লাড ব্যাংক)' };
-        localStorage.setItem('blood_token', 'blood_token_authenticated');
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ authenticated: true, user }));
-        return { success: true, user, message: 'লগইন সফল হয়েছে (অফলাইন মোড)!' };
+      // Check stored user if offline
+      const stored = localStorage.getItem(USER_KEY);
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.username === username.toLowerCase()) {
+          return { success: true, user: u, message: 'Login successful (offline session).' };
+        }
       }
-      return { success: false, message: 'ভুল ইউজারনেম বা পাসওয়ার্ড! (ইউজারনেম: admin, পাসওয়ার্ড: blood1234)' };
+      return { success: false, message: 'Invalid username or password. Please register first.' };
     }
   },
 
   // Logout
   async logout() {
     try {
-      await fetch(`${API_BASE}?action=logout`, { method: 'POST' });
+      const token = localStorage.getItem(TOKEN_KEY);
+      await fetch(`${API_BASE}?action=logout`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
     } catch (e) {}
-    localStorage.removeItem('blood_token');
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
     return { success: true };
   },
 
-  // Get records
+  // Save organization default settings
+  async saveSettings(settings) {
+    try {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const res = await fetch(`${API_BASE}?action=save_settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(settings)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const current = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+        current.orgSettings = data.orgSettings;
+        localStorage.setItem(USER_KEY, JSON.stringify(current));
+        return { success: true, orgSettings: data.orgSettings };
+      }
+    } catch (e) {
+      const current = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+      current.orgSettings = settings;
+      localStorage.setItem(USER_KEY, JSON.stringify(current));
+      return { success: true, orgSettings: settings };
+    }
+  },
+
+  // Get records for current user
   async getRecords() {
     try {
-      const token = localStorage.getItem('blood_token');
+      const token = localStorage.getItem(TOKEN_KEY);
       const res = await fetch(`${API_BASE}?action=get_records`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
@@ -85,16 +149,17 @@ export const api = {
         return data.records || [];
       }
     } catch (e) {
-      console.warn('Using local records fallback:', e);
+      console.warn('API getRecords error, fallback:', e);
     }
-    const local = localStorage.getItem(LOCAL_RECORDS_KEY);
+    const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+    const local = localStorage.getItem(`donor_records_${user.id || 'guest'}`);
     return local ? JSON.parse(local) : [];
   },
 
   // Save record
   async saveRecord(recordData) {
     try {
-      const token = localStorage.getItem('blood_token');
+      const token = localStorage.getItem(TOKEN_KEY);
       const res = await fetch(`${API_BASE}?action=save_record`, {
         method: 'POST',
         headers: {
@@ -105,58 +170,39 @@ export const api = {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // also sync with local storage
-        this.saveToLocalStorage(data.record || recordData);
         return { success: true, record: data.record, message: data.message };
       } else {
-        return { success: false, message: data.message || 'সেভ করা সম্ভব হয়নি।' };
+        return { success: false, message: data.message || 'Failed to save record.' };
       }
     } catch (e) {
-      console.warn('Backend not responding, saving to localStorage:', e);
-      const saved = this.saveToLocalStorage(recordData);
-      return { success: true, record: saved, message: 'রেকর্ড সফলভাবে সেভ হয়েছে (লোকাল স্টোরেজ)!' };
+      // Local fallback for offline
+      const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+      const storageKey = `donor_records_${user.id || 'guest'}`;
+      let list = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const id = recordData.id || ('rec_' + Date.now());
+      const rec = { ...recordData, id, userId: user.id, createdAt: new Date().toISOString() };
+      const idx = list.findIndex(r => r.id === id);
+      if (idx >= 0) list[idx] = rec;
+      else list.unshift(rec);
+      localStorage.setItem(storageKey, JSON.stringify(list));
+      return { success: true, record: rec, message: 'Record saved to your account.' };
     }
   },
 
   // Delete record
   async deleteRecord(id) {
     try {
-      const token = localStorage.getItem('blood_token');
-      const res = await fetch(`${API_BASE}?action=delete_record&id=${encodeURIComponent(id)}`, {
+      const token = localStorage.getItem(TOKEN_KEY);
+      await fetch(`${API_BASE}?action=delete_record&id=${encodeURIComponent(id)}`, {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
-      if (res.ok) {
-        this.deleteFromLocalStorage(id);
-        return { success: true };
-      }
     } catch (e) {}
-    this.deleteFromLocalStorage(id);
-    return { success: true };
-  },
-
-  saveToLocalStorage(record) {
-    const list = this.getRecordsFromLocalStorage();
-    const id = record.id || ('rec_' + Date.now());
-    const full = { ...record, id, createdAt: record.createdAt || new Date().toISOString() };
-    const idx = list.findIndex(r => r.id === id);
-    if (idx >= 0) {
-      list[idx] = full;
-    } else {
-      list.unshift(full);
-    }
-    localStorage.setItem(LOCAL_RECORDS_KEY, JSON.stringify(list));
-    return full;
-  },
-
-  deleteFromLocalStorage(id) {
-    let list = this.getRecordsFromLocalStorage();
+    const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+    const storageKey = `donor_records_${user.id || 'guest'}`;
+    let list = JSON.parse(localStorage.getItem(storageKey) || '[]');
     list = list.filter(r => r.id !== id);
-    localStorage.setItem(LOCAL_RECORDS_KEY, JSON.stringify(list));
-  },
-
-  getRecordsFromLocalStorage() {
-    const local = localStorage.getItem(LOCAL_RECORDS_KEY);
-    return local ? JSON.parse(local) : [];
+    localStorage.setItem(storageKey, JSON.stringify(list));
+    return { success: true };
   }
 };

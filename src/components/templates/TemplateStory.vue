@@ -1,27 +1,27 @@
 <template>
   <div class="story-poster">
-    <!-- Top Organization Banner -->
+    <!-- Top Organization Banner with Circular Logo -->
     <header class="story-header">
-      <div class="org-chip">
-        <span class="drop-icon">🩸</span>
-        <span class="org-text">{{ data.orgSubtitle || data.orgName || 'বাঞ্ছারামপুর ব্লাড ব্যাংক' }}</span>
+      <div class="org-brand-chip">
+        <img :src="data.orgLogo || defaultOrgLogo" alt="Logo" class="story-logo-img" />
+        <span class="org-name-text">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</span>
       </div>
-      <div class="story-tag">#SaveLives</div>
+      <div class="story-hashtag">#SaveLives</div>
     </header>
 
     <!-- Main Visual Content -->
     <main class="story-body">
       <!-- Big Slogan Banner -->
       <div class="quote-banner">
-        <p class="quote-main">“{{ data.heroQuote || 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে' }}”</p>
+        <p class="quote-main">“{{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Beside critical patients in need of blood') }}”</p>
       </div>
 
       <!-- Hero Photo with Badges -->
       <div class="photo-hero-wrapper">
         <div class="photo-frame">
           <img 
-            :src="data.donorPhoto || defaultPhoto" 
-            alt="রক্তদাতা" 
+            :src="data.donorPhoto || defaultDonorPhoto" 
+            alt="Donor" 
             class="donor-photo"
             :style="{
               transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
@@ -31,22 +31,22 @@
 
         <!-- Overlapping Blood Group Badge -->
         <div class="story-bg-badge">
-          <span class="bg-label">রক্তের গ্রুপ</span>
+          <span class="bg-label">{{ isBn ? 'রক্তের গ্রুপ' : 'BLOOD' }}</span>
           <span class="bg-val">{{ data.bloodGroup || 'O+' }}</span>
         </div>
 
         <!-- Donation Count Sticker -->
         <div class="story-count-sticker">
-          <span class="badge-num">{{ data.donationCount || '১ম বার' }}</span>
-          <span class="badge-lbl">রক্তদান</span>
+          <span class="badge-num">{{ data.donationCount || (isBn ? '১ম বার' : '1st Time') }}</span>
+          <span class="badge-lbl">{{ isBn ? 'রক্তদান' : 'Donation' }}</span>
         </div>
       </div>
 
       <!-- Donor Name Card -->
       <div class="donor-name-banner">
-        <div class="donor-hero-tag">🌟 গর্বিত রক্তযোদ্ধা 🌟</div>
-        <h2 class="name-text">{{ data.donorName || 'মোঃ জামাল উদ্দিন' }}</h2>
-        <p class="sub-quote">{{ data.quote || 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' }}</p>
+        <div class="donor-hero-tag">🌟 {{ isBn ? 'গর্বিত রক্তযোদ্ধা' : 'PROUD BLOOD DONOR' }} 🌟</div>
+        <h2 class="name-text">{{ data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name') }}</h2>
+        <p class="sub-quote">{{ data.quote || (isBn ? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' : 'Blood donation is the greatest gift of life') }}</p>
       </div>
     </main>
 
@@ -54,22 +54,22 @@
     <footer class="story-footer">
       <div class="footer-pills">
         <div class="pill-item date-pill">
-          <span>📅</span>
-          <span>{{ formattedDate }}</span>
+          <span>📅 {{ formattedDate }}</span>
         </div>
 
-        <div v-if="data.referenceName" class="pill-item ref-pill">
-          <span>🤝</span>
-          <span>রেফারেন্স: {{ data.referenceName }}</span>
+        <!-- Rendered ONLY if referenceName has content -->
+        <div v-if="hasReference" class="pill-item ref-pill">
+          <span>🤝 {{ isBn ? 'সংগ্রাহক / রেফারেন্স:' : 'Referred By:' }} {{ data.referenceName }}</span>
         </div>
       </div>
-      <div class="slogan-footer">{{ data.slogan || 'রক্ত দেওয়ার জন্যেই আমরা' }}</div>
+      <div class="slogan-footer">{{ data.slogan || (isBn ? 'মানবতার সেবায় রক্তদান' : 'Donate Blood, Save Lives') }}</div>
     </footer>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
 
 const props = defineProps({
@@ -79,11 +79,20 @@ const props = defineProps({
   }
 });
 
-const defaultPhoto = '/sample_donor.jfif';
+const defaultOrgLogo = '/default_org_logo.png';
+const defaultDonorPhoto = '/sample_donor.jfif';
+const isBn = computed(() => currentLang.value === 'bn');
+
+const hasReference = computed(() => {
+  return typeof props.data.referenceName === 'string' && props.data.referenceName.trim().length > 0;
+});
 
 const formattedDate = computed(() => {
-  if (!props.data.donationDate) return '০৭-১০-২০২৬';
-  return formatBengaliDate(props.data.donationDate, 'bengali-digits');
+  if (!props.data.donationDate) return '07-10-2026';
+  if (isBn.value) {
+    return formatBengaliDate(props.data.donationDate, 'bengali-digits');
+  }
+  return props.data.donationDate;
 });
 </script>
 
@@ -96,7 +105,7 @@ const formattedDate = computed(() => {
   color: #fff;
   padding: 1.4rem 1.2rem;
   box-sizing: border-box;
-  font-family: 'Hind Siliguri', sans-serif;
+  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -111,28 +120,36 @@ const formattedDate = computed(() => {
   z-index: 5;
 }
 
-.org-chip {
+.org-brand-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.15);
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(8px);
-  padding: 0.35rem 0.8rem;
+  padding: 0.35rem 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.25);
+  max-width: 80%;
 }
 
-.drop-icon {
-  font-size: 1rem;
+.story-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
 }
 
-.org-text {
+.org-name-text {
   font-size: 0.85rem;
   font-weight: 700;
   color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.story-tag {
+.story-hashtag {
   font-family: 'Outfit', sans-serif;
   font-size: 0.75rem;
   font-weight: 800;
@@ -140,7 +157,6 @@ const formattedDate = computed(() => {
   letter-spacing: 0.5px;
 }
 
-/* Body */
 .story-body {
   flex: 1;
   display: flex;
@@ -274,7 +290,6 @@ const formattedDate = computed(() => {
   font-weight: 500;
 }
 
-/* Footer */
 .story-footer {
   display: flex;
   flex-direction: column;
@@ -302,9 +317,8 @@ const formattedDate = computed(() => {
 }
 
 .ref-pill {
-  background: rgba(245, 158, 11, 0.25);
-  color: #fef08a;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: #fefce8;
+  color: #854d0e;
 }
 
 .slogan-footer {

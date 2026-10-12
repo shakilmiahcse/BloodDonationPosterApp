@@ -3,7 +3,7 @@
     <div class="modal-content records-modal">
       <div class="card-title-row">
         <h2>
-          <span>📁</span> সংরক্ষিত রক্তদাতা রেকর্ড (JSON ডাটাবেজ)
+          <span>📁</span> {{ t('recordsModalTitle') }}
         </h2>
         <button class="btn btn-secondary btn-icon btn-sm" @click="$emit('close')">✕</button>
       </div>
@@ -11,9 +11,11 @@
       <!-- Auth Warning if not authenticated -->
       <div v-if="!authState.authenticated" class="unauth-records-box">
         <div class="unauth-icon">🔒</div>
-        <h3>লগইন করা আবশ্যক</h3>
-        <p>সার্ভার জেসন ফাইল থেকে সংরক্ষিত রেকর্ড দেখতে এবং পরিচালনা করতে অ্যাডমিন হিসেবে লগইন করুন।</p>
-        <button class="btn btn-primary btn-sm" @click="$emit('open-login')">এখনই লগইন করুন</button>
+        <h3>{{ t('loginToViewRecordsTitle') }}</h3>
+        <p>{{ t('loginToViewRecordsDesc') }}</p>
+        <button class="btn btn-primary btn-sm" @click="$emit('open-auth')">
+          {{ t('loginNowBtn') }}
+        </button>
       </div>
 
       <!-- Authenticated Content -->
@@ -22,7 +24,7 @@
         <div class="stats-cards-grid">
           <div class="stat-card total-card">
             <span class="stat-num">{{ records.length }}</span>
-            <span class="stat-label">মোট রক্তদাতা</span>
+            <span class="stat-label">{{ t('totalDonorsCount') }}</span>
           </div>
 
           <div class="stat-card blood-stats">
@@ -36,7 +38,7 @@
                 <strong>{{ bg }}:</strong> {{ count }}
               </span>
             </div>
-            <span class="stat-label">গ্রুপ ভিত্তিক ডোনেশন</span>
+            <span class="stat-label">{{ t('groupWiseStats') }}</span>
           </div>
         </div>
 
@@ -46,10 +48,10 @@
             type="text" 
             class="form-input search-box" 
             v-model="searchQuery" 
-            placeholder="🔍 রক্তদাতার নাম দিয়ে খুঁজুন..." 
+            :placeholder="t('searchDonorPlaceholder')" 
           />
           <select class="form-select filter-select" v-model="filterBloodGroup">
-            <option value="">সব গ্রুপ</option>
+            <option value="">{{ t('allGroups') }}</option>
             <option v-for="bg in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']" :key="bg" :value="bg">
               {{ bg }}
             </option>
@@ -58,12 +60,12 @@
 
         <!-- Records List -->
         <div v-if="loading" class="loading-state">
-          <span>⏳ রেকর্ড লোড হচ্ছে...</span>
+          <span>⏳ {{ t('loadingRecords') }}</span>
         </div>
 
         <div v-else-if="filteredRecords.length === 0" class="empty-state">
           <div class="empty-icon">📂</div>
-          <p>কোনো সংরক্ষিত রেকর্ড পাওয়া যায়নি!</p>
+          <p>{{ t('noRecordsFound') }}</p>
         </div>
 
         <div v-else class="records-items-list">
@@ -88,13 +90,13 @@
             <div class="record-meta">
               <div class="record-name-row">
                 <h4 class="rec-donor-name">{{ rec.donorName }}</h4>
-                <span class="rec-count-badge">{{ rec.donationCount || '১ম বার' }}</span>
+                <span class="rec-count-badge">{{ rec.donationCount || '1st Time' }}</span>
               </div>
 
               <div class="rec-sub-info">
                 <span>📅 {{ rec.donationDate }}</span>
                 <span v-if="rec.referenceName" class="rec-ref">
-                  🤝 রেফারেন্স: {{ rec.referenceName }}
+                  🤝 {{ rec.referenceName }}
                 </span>
               </div>
             </div>
@@ -104,14 +106,14 @@
               <button 
                 class="btn btn-secondary btn-sm" 
                 @click="loadRecordIntoEditor(rec)"
-                title="পোস্টারে লোড করুন"
+                :title="t('loadToEditorBtn')"
               >
-                ✏️ লোড
+                {{ t('loadToEditorBtn') }}
               </button>
               <button 
                 class="btn btn-secondary btn-sm btn-delete" 
                 @click="deleteRecord(rec.id)"
-                title="রেকর্ড মুছুন"
+                :title="t('deleteBtn')"
               >
                 🗑️
               </button>
@@ -119,13 +121,13 @@
           </div>
         </div>
 
-        <!-- Export JSON file & Refresh -->
+        <!-- Actions -->
         <div class="records-footer-actions">
           <button class="btn btn-secondary btn-sm" @click="fetchRecords">
-            🔄 রিফ্রেশ
+            {{ t('refreshBtn') }}
           </button>
-          <button class="btn btn-primary btn-sm" @click="exportJsonFile">
-            📥 JSON ফাইল ডাউনলোড
+          <button class="btn btn-primary btn-sm" @click="exportRecordsFile">
+            {{ t('exportFileBtn') }}
           </button>
         </div>
       </div>
@@ -136,6 +138,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { api } from '../utils/api';
+import { t, currentLang } from '../utils/i18n';
 
 const props = defineProps({
   authState: {
@@ -144,7 +147,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'open-login', 'load-record', 'notify']);
+const emit = defineEmits(['close', 'open-auth', 'load-record', 'notify']);
 
 const records = ref([]);
 const loading = ref(false);
@@ -189,23 +192,27 @@ const bloodGroupStats = computed(() => {
 function loadRecordIntoEditor(rec) {
   emit('load-record', rec);
   emit('close');
-  emit('notify', `"${rec.donorName}" এর তথ্য পোস্টারে লোড করা হয়েছে!`);
+  emit('notify', t('toastLoaded'));
 }
 
 async function deleteRecord(id) {
-  if (!confirm('আপনি কি নিশ্চিত যে এই রেকর্ডটি ডিলিট করতে চান?')) return;
+  const confirmMsg = currentLang.value === 'bn' 
+    ? 'আপনি কি নিশ্চিত যে এই রেকর্ডটি মুছতে চান?' 
+    : 'Are you sure you want to delete this donor record?';
+  if (!confirm(confirmMsg)) return;
+
   await api.deleteRecord(id);
   records.value = records.value.filter(r => r.id !== id);
-  emit('notify', 'রেকর্ডটি ডিলিট করা হয়েছে।');
+  emit('notify', currentLang.value === 'bn' ? 'রেকর্ডটি মোছা হয়েছে।' : 'Record deleted.');
 }
 
-function exportJsonFile() {
+function exportRecordsFile() {
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(records.value, null, 2));
   const dlAnchor = document.createElement('a');
   dlAnchor.setAttribute('href', dataStr);
-  dlAnchor.setAttribute('download', `blood_donation_records_${Date.now()}.json`);
+  dlAnchor.setAttribute('download', `donor_records_backup_${Date.now()}.json`);
   dlAnchor.click();
-  emit('notify', 'records.json ফাইল ডাউনলোড হয়েছে!');
+  emit('notify', currentLang.value === 'bn' ? 'রেকর্ড ফাইল ডাউনলোড হয়েছে!' : 'Records file downloaded!');
 }
 </script>
 
@@ -235,6 +242,7 @@ function exportJsonFile() {
   max-width: 380px;
   margin: 0 auto 1.5rem;
   font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .stats-cards-grid {

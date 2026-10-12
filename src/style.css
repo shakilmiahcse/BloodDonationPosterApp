@@ -145,13 +145,14 @@ body {
 .badge-auth-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.74rem;
+  font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
+  user-select: none;
 }
 
 .badge-auth-status.logged-in {
@@ -168,6 +169,7 @@ body {
 
 .badge-auth-status:hover {
   transform: translateY(-1px);
+  filter: brightness(1.1);
 }
 
 /* App Main Layout */

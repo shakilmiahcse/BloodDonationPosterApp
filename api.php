@@ -19,39 +19,13 @@ if (!is_dir($dataDir)) {
 $recordsFile = $dataDir . '/records.json';
 $usersFile = $dataDir . '/users.json';
 
-// Initialize users file with default credentials if not existing
+// Initialize files if not existing
 if (!file_exists($usersFile)) {
-    $defaultUsers = [
-        [
-            "username" => "admin",
-            "password" => "blood1234", // Simple default password
-            "name" => "অ্যাডমিন (ব্লাড ব্যাংক)"
-        ]
-    ];
-    file_put_contents($usersFile, json_encode($defaultUsers, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents($usersFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
-// Initialize records file if not existing
 if (!file_exists($recordsFile)) {
-    $initialRecords = [
-        [
-            "id" => "rec_sample_01",
-            "donorName" => "মোঃ জামাল উদ্দিন",
-            "bloodGroup" => "O+",
-            "donationCount" => "১ম বার",
-            "donationDate" => "2026-10-07",
-            "referenceName" => "বাঞ্ছারামপুর ব্লাড ব্যাংক",
-            "templateId" => "bancharampur-classic",
-            "orgName" => "BANCHARAMPUR BLOOD BANK",
-            "orgSubtitle" => "বাঞ্ছারামপুর ব্লাড ব্যাংক",
-            "slogan" => "রক্ত দেওয়ার জন্যেই আমরা",
-            "heroQuote" => "রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে",
-            "quote" => "রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার",
-            "donorPhoto" => "",
-            "createdAt" => "2026-10-07 10:00:00"
-        ]
-    ];
-    file_put_contents($recordsFile, json_encode($initialRecords, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents($recordsFile, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 function getJsonInput() {
@@ -59,96 +33,281 @@ function getJsonInput() {
     return json_decode($raw, true) ?: [];
 }
 
-function isAuthenticated() {
-    if (!empty($_SESSION['auth_user'])) {
-        return true;
-    }
-    // Also support Authorization header Bearer token for client API fetch
+function getUsers() {
+    global $usersFile;
+    if (!file_exists($usersFile)) return [];
+    return json_decode(file_get_contents($usersFile), true) ?: [];
+}
+
+function saveUsers($users) {
+    global $usersFile;
+    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function getRecords() {
+    global $recordsFile;
+    if (!file_exists($recordsFile)) return [];
+    return json_decode(file_get_contents($recordsFile), true) ?: [];
+}
+
+function saveRecords($records) {
+    global $recordsFile;
+    file_put_contents($recordsFile, json_encode($records, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
+function getCurrentUser() {
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
-    if (str_starts_with($authHeader, 'Bearer ') && substr($authHeader, 7) === 'blood_token_authenticated') {
-        return true;
+    
+    $token = '';
+    if (str_starts_with($authHeader, 'Bearer ')) {
+        $token = trim(substr($authHeader, 7));
+    } elseif (!empty($_SESSION['auth_token'])) {
+        $token = $_SESSION['auth_token'];
     }
-    return false;
+
+    if (!$token) return null;
+
+    // Token format: usr_[id]_[hash]
+    $users = getUsers();
+    foreach ($users as $u) {
+        if (!empty($u['token']) && $u['token'] === $token) {
+            return $u;
+        }
+    }
+    return null;
 }
 
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'check_auth':
-        $isAuth = isAuthenticated();
+        $user = getCurrentUser();
+        if ($user) {
+            echo json_encode([
+                "authenticated" => true,
+                "user" => [
+                    "id" => $user['id'],
+                    "username" => $user['username'],
+                    "name" => $user['name'],
+                    "orgSettings" => $user['orgSettings'] ?? []
+                ]
+            ]);
+        } else {
+            echo json_encode([
+                "authenticated" => false,
+                "user" => null
+            ]);
+        }
+        break;
+
+    case 'register':
+        $input = getJsonInput();
+        $name = trim($input['name'] ?? '');
+        $username = strtolower(trim($input['username'] ?? ''));
+        $password = trim($input['password'] ?? '');
+
+        if (empty($name) || empty($username) || empty($password)) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "All fields (Name, Username, Password) are required."
+            ]);
+            exit;
+        }
+
+        if (strlen($password) < 4) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "Password must be at least 4 characters long."
+            ]);
+            exit;
+        }
+
+        $users = getUsers();
+        foreach ($users as $u) {
+            if ($u['username'] === $username) {
+                http_response_code(409);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "This username is already registered. Please choose another username or log in."
+                ]);
+                exit;
+            }
+        }
+
+        $userId = 'usr_' . time() . '_' . rand(1000, 9999);
+        $token = 'token_' . $userId . '_' . bin2hex(random_bytes(8));
+
+        $orgSettings = [
+            "orgName" => trim($input['orgName'] ?? ''),
+            "orgSubtitle" => trim($input['orgSubtitle'] ?? ''),
+            "slogan" => trim($input['slogan'] ?? 'রক্ত দেওয়ার জন্যেই আমরা'),
+            "heroQuote" => trim($input['heroQuote'] ?? 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে'),
+            "quote" => trim($input['quote'] ?? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার'),
+            "templateId" => trim($input['templateId'] ?? 'bancharampur-classic'),
+            "orgLogo" => $input['orgLogo'] ?? ''
+        ];
+
+        $newUser = [
+            "id" => $userId,
+            "username" => $username,
+            "password" => $password,
+            "name" => $name,
+            "token" => $token,
+            "orgSettings" => $orgSettings,
+            "createdAt" => date('Y-m-d H:i:s')
+        ];
+
+        $users[] = $newUser;
+        saveUsers($users);
+
+        $_SESSION['auth_token'] = $token;
+
         echo json_encode([
-            "authenticated" => $isAuth,
-            "user" => $isAuth ? ($_SESSION['auth_user'] ?? "admin") : null
+            "success" => true,
+            "token" => $token,
+            "user" => [
+                "id" => $userId,
+                "username" => $username,
+                "name" => $name,
+                "orgSettings" => $orgSettings
+            ],
+            "message" => "Registration successful! You are now logged in."
         ]);
         break;
 
     case 'login':
         $input = getJsonInput();
-        $username = trim($input['username'] ?? '');
+        $username = strtolower(trim($input['username'] ?? ''));
         $password = trim($input['password'] ?? '');
 
-        $users = json_decode(file_get_contents($usersFile), true) ?: [];
-        $valid = false;
-        $matchedUser = null;
+        if (empty($username) || empty($password)) {
+            http_response_code(400);
+            echo json_encode([
+                "success" => false,
+                "message" => "Please enter both username and password."
+            ]);
+            exit;
+        }
 
-        foreach ($users as $u) {
+        $users = getUsers();
+        $matchedUser = null;
+        $matchedIndex = -1;
+
+        foreach ($users as $idx => $u) {
             if ($u['username'] === $username && $u['password'] === $password) {
-                $valid = true;
                 $matchedUser = $u;
+                $matchedIndex = $idx;
                 break;
             }
         }
 
-        if ($valid) {
-            $_SESSION['auth_user'] = $username;
+        if ($matchedUser) {
+            $token = 'token_' . $matchedUser['id'] . '_' . bin2hex(random_bytes(8));
+            $users[$matchedIndex]['token'] = $token;
+            saveUsers($users);
+
+            $_SESSION['auth_token'] = $token;
+
             echo json_encode([
                 "success" => true,
-                "token" => "blood_token_authenticated",
+                "token" => $token,
                 "user" => [
+                    "id" => $matchedUser['id'],
                     "username" => $matchedUser['username'],
-                    "name" => $matchedUser['name']
+                    "name" => $matchedUser['name'],
+                    "orgSettings" => $matchedUser['orgSettings'] ?? []
                 ],
-                "message" => "লগইন সফল হয়েছে!"
+                "message" => "Login successful!"
             ]);
         } else {
             http_response_code(401);
             echo json_encode([
                 "success" => false,
-                "message" => "ভুল ইউজারনেম বা পাসওয়ার্ড!"
+                "message" => "Invalid username or password. If you don't have an account, please register first."
             ]);
         }
         break;
 
     case 'logout':
-        $_SESSION['auth_user'] = null;
+        $user = getCurrentUser();
+        if ($user) {
+            $users = getUsers();
+            foreach ($users as $idx => $u) {
+                if ($u['id'] === $user['id']) {
+                    $users[$idx]['token'] = '';
+                    break;
+                }
+            }
+            saveUsers($users);
+        }
+        $_SESSION['auth_token'] = null;
         session_destroy();
-        echo json_encode(["success" => true, "message" => "লগআউট সফল হয়েছে!"]);
+        echo json_encode(["success" => true, "message" => "Successfully logged out."]);
+        break;
+
+    case 'save_settings':
+        $user = getCurrentUser();
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(["success" => false, "message" => "Login required to save organization settings."]);
+            exit;
+        }
+
+        $input = getJsonInput();
+        $users = getUsers();
+        foreach ($users as $idx => $u) {
+            if ($u['id'] === $user['id']) {
+                $users[$idx]['orgSettings'] = array_merge($u['orgSettings'] ?? [], [
+                    "orgName" => $input['orgName'] ?? ($u['orgSettings']['orgName'] ?? ''),
+                    "orgSubtitle" => $input['orgSubtitle'] ?? ($u['orgSettings']['orgSubtitle'] ?? ''),
+                    "slogan" => $input['slogan'] ?? ($u['orgSettings']['slogan'] ?? ''),
+                    "heroQuote" => $input['heroQuote'] ?? ($u['orgSettings']['heroQuote'] ?? ''),
+                    "quote" => $input['quote'] ?? ($u['orgSettings']['quote'] ?? ''),
+                    "templateId" => $input['templateId'] ?? ($u['orgSettings']['templateId'] ?? 'bancharampur-classic'),
+                    "orgLogo" => $input['orgLogo'] ?? ($u['orgSettings']['orgLogo'] ?? '')
+                ]);
+                saveUsers($users);
+                echo json_encode([
+                    "success" => true,
+                    "orgSettings" => $users[$idx]['orgSettings'],
+                    "message" => "Organization settings saved successfully."
+                ]);
+                exit;
+            }
+        }
         break;
 
     case 'get_records':
-        if (!isAuthenticated()) {
+        $user = getCurrentUser();
+        if (!$user) {
             http_response_code(403);
             echo json_encode([
                 "success" => false,
-                "message" => "রেকর্ড দেখার জন্য লগইন আবশ্যক!"
+                "message" => "Login required to access saved donor records."
             ]);
             exit;
         }
 
-        $records = json_decode(file_get_contents($recordsFile), true) ?: [];
+        // Multi-user isolation: return only this user's records
+        $allRecords = getRecords();
+        $userRecords = array_values(array_filter($allRecords, fn($r) => ($r['userId'] ?? '') === $user['id']));
+
         echo json_encode([
             "success" => true,
-            "records" => $records
+            "records" => $userRecords
         ]);
         break;
 
     case 'save_record':
-        if (!isAuthenticated()) {
+        $user = getCurrentUser();
+        if (!$user) {
             http_response_code(403);
             echo json_encode([
                 "success" => false,
-                "message" => "ডাটা সেভ করার জন্য লগইন করা আবশ্যক! আপনি চাইলে কার্ড ডাউনলোড ও শেয়ার করতে পারেন।"
+                "message" => "Registration / Login is required to save records to your account."
             ]);
             exit;
         }
@@ -156,73 +315,101 @@ switch ($action) {
         $input = getJsonInput();
         if (empty($input['donorName'])) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "রক্তদাতার নাম আবশ্যক!"]);
+            echo json_encode(["success" => false, "message" => "Donor name is required."]);
             exit;
         }
 
-        $records = json_decode(file_get_contents($recordsFile), true) ?: [];
-
+        $allRecords = getRecords();
         $recordId = !empty($input['id']) ? $input['id'] : ('rec_' . time() . '_' . rand(100, 999));
-        
+
         $newRecord = [
             "id" => $recordId,
+            "userId" => $user['id'], // Stored strictly with the owner user ID
             "donorName" => $input['donorName'],
             "bloodGroup" => $input['bloodGroup'] ?? 'O+',
-            "donationCount" => $input['donationCount'] ?? '১ম বার',
+            "donationCount" => $input['donationCount'] ?? '1st Time',
             "donationDate" => $input['donationDate'] ?? date('Y-m-d'),
-            "referenceName" => $input['referenceName'] ?? '',
-            "templateId" => $input['templateId'] ?? 'bancharampur-classic',
-            "orgName" => $input['orgName'] ?? 'BANCHARAMPUR BLOOD BANK',
-            "orgSubtitle" => $input['orgSubtitle'] ?? 'বাঞ্ছারামপুর ব্লাড ব্যাংক',
-            "slogan" => $input['slogan'] ?? 'রক্ত দেওয়ার জন্যেই আমরা',
-            "heroQuote" => $input['heroQuote'] ?? 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে',
-            "quote" => $input['quote'] ?? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার',
+            "referenceName" => trim($input['referenceName'] ?? ''),
+            "templateId" => $input['templateId'] ?? ($user['orgSettings']['templateId'] ?? 'bancharampur-classic'),
+            "orgName" => $input['orgName'] ?? ($user['orgSettings']['orgName'] ?? ''),
+            "orgSubtitle" => $input['orgSubtitle'] ?? ($user['orgSettings']['orgSubtitle'] ?? ''),
+            "slogan" => $input['slogan'] ?? ($user['orgSettings']['slogan'] ?? ''),
+            "heroQuote" => $input['heroQuote'] ?? ($user['orgSettings']['heroQuote'] ?? ''),
+            "quote" => $input['quote'] ?? ($user['orgSettings']['quote'] ?? ''),
+            "orgLogo" => $input['orgLogo'] ?? ($user['orgSettings']['orgLogo'] ?? '/default_org_logo.png'),
             "donorPhoto" => $input['donorPhoto'] ?? '',
             "createdAt" => date('Y-m-d H:i:s')
         ];
 
-        // Check if updating existing
+        // Check if updating existing record belonging to this user
         $found = false;
-        foreach ($records as $idx => $r) {
+        foreach ($allRecords as $idx => $r) {
             if ($r['id'] === $recordId) {
-                $records[$idx] = $newRecord;
-                $found = true;
+                // Ensure ownership
+                if (($r['userId'] ?? '') === $user['id']) {
+                    $allRecords[$idx] = $newRecord;
+                    $found = true;
+                }
                 break;
             }
         }
         if (!$found) {
-            array_unshift($records, $newRecord);
+            array_unshift($allRecords, $newRecord);
         }
 
-        file_put_contents($recordsFile, json_encode($records, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        saveRecords($allRecords);
+
+        // Also save user's current template and org settings for future entries
+        $users = getUsers();
+        foreach ($users as $idx => $u) {
+            if ($u['id'] === $user['id']) {
+                $users[$idx]['orgSettings']['templateId'] = $newRecord['templateId'];
+                if (!empty($newRecord['orgName'])) $users[$idx]['orgSettings']['orgName'] = $newRecord['orgName'];
+                if (!empty($newRecord['orgSubtitle'])) $users[$idx]['orgSettings']['orgSubtitle'] = $newRecord['orgSubtitle'];
+                if (!empty($newRecord['orgLogo'])) $users[$idx]['orgSettings']['orgLogo'] = $newRecord['orgLogo'];
+                if (!empty($newRecord['slogan'])) $users[$idx]['orgSettings']['slogan'] = $newRecord['slogan'];
+                if (!empty($newRecord['heroQuote'])) $users[$idx]['orgSettings']['heroQuote'] = $newRecord['heroQuote'];
+                if (!empty($newRecord['quote'])) $users[$idx]['orgSettings']['quote'] = $newRecord['quote'];
+                saveUsers($users);
+                break;
+            }
+        }
 
         echo json_encode([
             "success" => true,
             "record" => $newRecord,
-            "message" => "রেকর্ড সফলভাবে সেভ করা হয়েছে!"
+            "message" => "Donor record saved successfully to your account."
         ]);
         break;
 
     case 'delete_record':
-        if (!isAuthenticated()) {
+        $user = getCurrentUser();
+        if (!$user) {
             http_response_code(403);
-            echo json_encode(["success" => false, "message" => "অনুমতি নেই!"]);
+            echo json_encode(["success" => false, "message" => "Unauthorized."]);
             exit;
         }
 
         $recordId = $_GET['id'] ?? '';
-        $records = json_decode(file_get_contents($recordsFile), true) ?: [];
-        $filtered = array_values(array_filter($records, fn($r) => $r['id'] !== $recordId));
+        $allRecords = getRecords();
 
-        file_put_contents($recordsFile, json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        echo json_encode(["success" => true, "message" => "রেকর্ড ডিলিট করা হয়েছে!"]);
+        // Only delete if belongs to current user
+        $filtered = array_values(array_filter($allRecords, function($r) use ($recordId, $user) {
+            if ($r['id'] === $recordId) {
+                return ($r['userId'] ?? '') !== $user['id']; // Keep if not owned by user
+            }
+            return true;
+        }));
+
+        saveRecords($filtered);
+        echo json_encode(["success" => true, "message" => "Record deleted successfully."]);
         break;
 
     default:
         echo json_encode([
             "status" => "online",
-            "service" => "Blood Donation Poster API",
-            "version" => "1.0.0"
+            "service" => "Blood Donation Poster Manager",
+            "version" => "2.0.0"
         ]);
         break;
 }
