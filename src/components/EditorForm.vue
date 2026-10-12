@@ -298,6 +298,7 @@
 import { ref, computed } from 'vue';
 import { t, currentLang, quotePresets, countPresets } from '../utils/i18n';
 import { compressImageFile } from '../utils/imageUtils';
+import defaultOrgLogo from '../assets/default_org_logo.png';
 
 const props = defineProps({
   formData: {
@@ -314,7 +315,6 @@ const emit = defineEmits(['notify', 'save-org-defaults', 'new-entry']);
 
 const fileInput = ref(null);
 const logoFileInput = ref(null);
-const defaultOrgLogo = '/default_org_logo.png';
 
 // Facebook PhotoCard styles
 const templates = [

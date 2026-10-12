@@ -166,6 +166,8 @@ import UserMenuModal from './components/UserMenuModal.vue';
 import RecordsDrawer from './components/RecordsDrawer.vue';
 import { api } from './utils/api';
 import { t, currentLang, toggleLanguage } from './utils/i18n';
+import defaultOrgLogo from './assets/default_org_logo.png';
+import defaultDonorPhoto from './assets/sample_donor.jfif';
 
 const activeMobileTab = ref('preview');
 const showAuthModal = ref(false);
@@ -177,9 +179,6 @@ const authState = reactive({
   authenticated: false,
   user: null
 });
-
-// Initial form state with true organization name and logo
-const defaultOrgLogo = '/default_org_logo.png';
 
 const formData = reactive({
   id: '',
@@ -195,7 +194,7 @@ const formData = reactive({
   donationCount: '১ম বার',
   donationDate: '2026-10-07',
   referenceName: '', // Empty by default
-  donorPhoto: '/sample_donor.jfif',
+  donorPhoto: defaultDonorPhoto,
   photoZoom: 1,
   photoPanX: 0,
   photoPanY: 0,

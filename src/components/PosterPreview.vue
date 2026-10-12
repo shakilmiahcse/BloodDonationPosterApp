@@ -151,19 +151,42 @@ async function downloadImage(format = 'png') {
   emit('notify', t('downloadingBtn'));
 
   try {
+    // Target the actual poster element directly (avoid viewport margin-auto & outer shadows)
+    const targetEl = captureArea.value.firstElementChild || captureArea.value;
+    const rect = targetEl.getBoundingClientRect();
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
     const scale = 2.5; // High definition output
     const options = {
       quality: 0.98,
       pixelRatio: scale,
+      width: width,
+      height: height,
+      canvasWidth: width * scale,
+      canvasHeight: height * scale,
       cacheBust: true,
-      skipFonts: false
+      skipFonts: false,
+      style: {
+        margin: '0',
+        marginLeft: '0',
+        marginRight: '0',
+        marginTop: '0',
+        marginBottom: '0',
+        padding: '0',
+        transform: 'none',
+        boxShadow: 'none',
+        left: '0',
+        top: '0',
+        position: 'static'
+      }
     };
 
     let dataUrl;
     if (format === 'jpeg' || format === 'jpg') {
-      dataUrl = await htmlToImage.toJpeg(captureArea.value, options);
+      dataUrl = await htmlToImage.toJpeg(targetEl, options);
     } else {
-      dataUrl = await htmlToImage.toPng(captureArea.value, options);
+      dataUrl = await htmlToImage.toPng(targetEl, options);
     }
 
     const donorNameClean = (props.formData.donorName || 'donor').replace(/\s+/g, '_');
@@ -172,7 +195,11 @@ async function downloadImage(format = 'png') {
     const link = document.createElement('a');
     link.download = filename;
     link.href = dataUrl;
+    document.body.appendChild(link);
     link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 150);
 
     fireConfetti();
     emit('notify', t('toastDownloaded'));
@@ -199,7 +226,29 @@ async function shareNative() {
   isGenerating.value = true;
 
   try {
-    const blob = await htmlToImage.toBlob(captureArea.value, { pixelRatio: 2, quality: 0.95 });
+    const targetEl = captureArea.value.firstElementChild || captureArea.value;
+    const rect = targetEl.getBoundingClientRect();
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
+    const blob = await htmlToImage.toBlob(targetEl, {
+      pixelRatio: 2,
+      width: width,
+      height: height,
+      quality: 0.95,
+      style: {
+        margin: '0',
+        marginLeft: '0',
+        marginRight: '0',
+        marginTop: '0',
+        marginBottom: '0',
+        transform: 'none',
+        boxShadow: 'none',
+        left: '0',
+        top: '0',
+        position: 'static'
+      }
+    });
     const filename = `blood_donor_${Date.now()}.png`;
     const file = new File([blob], filename, { type: 'image/png' });
 

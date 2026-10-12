@@ -11,7 +11,7 @@
       <!-- Header with Circular Org Logo -->
       <header class="cert-header">
         <div class="cert-logo-row">
-          <img :src="data.orgLogo || defaultOrgLogo" alt="Logo" class="cert-org-logo" />
+          <img :src="logoSrc" alt="Logo" class="cert-org-logo" />
         </div>
         <div class="cert-badge">🏅 {{ isBn ? 'সম্মাননা ও কৃতজ্ঞতা স্মারক' : 'CERTIFICATE OF HONOR & GRATITUDE' }}</div>
         <h1 class="cert-org-name">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</h1>
@@ -27,7 +27,7 @@
           <div class="cert-photo-wrapper">
             <div class="cert-photo-frame">
               <img 
-                :src="data.donorPhoto || defaultDonorPhoto" 
+                :src="donorPhotoSrc" 
                 alt="Donor" 
                 class="cert-photo"
                 :style="{
@@ -89,6 +89,8 @@
 import { computed } from 'vue';
 import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
+import defaultOrgLogo from '../../assets/default_org_logo.png';
+import defaultDonorPhoto from '../../assets/sample_donor.jpg';
 
 const props = defineProps({
   data: {
@@ -97,9 +99,21 @@ const props = defineProps({
   }
 });
 
-const defaultOrgLogo = '/default_org_logo.png';
-const defaultDonorPhoto = '/sample_donor.jfif';
 const isBn = computed(() => currentLang.value === 'bn');
+
+const logoSrc = computed(() => {
+  if (!props.data.orgLogo || props.data.orgLogo === '/default_org_logo.png' || props.data.orgLogo === './default_org_logo.png') {
+    return defaultOrgLogo;
+  }
+  return props.data.orgLogo;
+});
+
+const donorPhotoSrc = computed(() => {
+  if (!props.data.donorPhoto || props.data.donorPhoto === '/sample_donor.jfif' || props.data.donorPhoto === './sample_donor.jfif' || props.data.donorPhoto === '/sample_donor.jpg') {
+    return defaultDonorPhoto;
+  }
+  return props.data.donorPhoto;
+});
 
 const hasReference = computed(() => {
   return typeof props.data.referenceName === 'string' && props.data.referenceName.trim().length > 0;
@@ -124,7 +138,7 @@ const formattedDate = computed(() => {
   padding: 1rem;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', serif;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .cert-inner-border {
