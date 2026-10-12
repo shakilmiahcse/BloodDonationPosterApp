@@ -478,12 +478,18 @@ function startNewDonorEntry() {
 
 .active-tpl-badge-compact {
   font-size: 0.72rem;
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   font-weight: 700;
+}
+
+[data-theme="dark"] .active-tpl-badge-compact {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .templates-grid-compact {
@@ -497,8 +503,8 @@ function startNewDonorEntry() {
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.65rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-card);
+  border: 1px solid var(--input-border);
   border-radius: var(--radius-md);
   color: var(--text-muted);
   font-family: inherit;
@@ -510,13 +516,23 @@ function startNewDonorEntry() {
 }
 
 .template-card-compact:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+  border-color: #ef4444;
+}
+
+[data-theme="dark"] .template-card-compact {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .template-card-compact:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .template-card-compact.active {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.5));
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
   border-color: #ef4444;
   color: #fff;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
@@ -530,21 +546,26 @@ function startNewDonorEntry() {
 .form-section-title {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #fca5a5;
+  color: #b91c1c;
   margin: 1.1rem 0 0.65rem;
   padding-bottom: 0.35rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-glass);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.4rem;
 }
 
+[data-theme="dark"] .form-section-title {
+  color: #fca5a5;
+}
+
 .btn-save-org-mini {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fef08a;
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: #b45309;
   font-size: 0.72rem;
+  font-weight: 700;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   cursor: pointer;
@@ -552,8 +573,14 @@ function startNewDonorEntry() {
 }
 
 .btn-save-org-mini:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: #fef08a;
+  background: rgba(217, 119, 6, 0.2);
+  border-color: #d97706;
+}
+
+[data-theme="dark"] .btn-save-org-mini {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fef08a;
 }
 
 /* Org Logo Control */
@@ -561,10 +588,10 @@ function startNewDonorEntry() {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--bg-card-hover);
   padding: 0.65rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
 }
 
 .org-logo-preview-box {
@@ -630,7 +657,7 @@ function startNewDonorEntry() {
 .photo-upload-prompt {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text-main);
 }
 
 .upload-sub {
@@ -645,7 +672,7 @@ function startNewDonorEntry() {
 .ctrl-val {
   font-size: 0.75rem;
   font-family: 'Outfit', sans-serif;
-  color: #cbd5e1;
+  color: var(--text-muted);
   min-width: 40px;
 }
 </style>

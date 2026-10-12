@@ -124,8 +124,8 @@ const formattedDate = computed(() => {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5.2;
-  background: linear-gradient(180deg, #090e1a 0%, #181534 30%, #35081b 75%, #0d0611 100%);
-  color: #fff;
+  background: linear-gradient(165deg, #ffffff 0%, #fffbf5 35%, #fff1f2 75%, #fef2f2 100%);
+  color: #0f172a;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -133,7 +133,9 @@ const formattedDate = computed(() => {
   padding: 1.1rem 1.3rem;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
-  border: 3px solid #f59e0b;
+  border: 3.5px solid #d97706;
+  outline: 2px solid #dc2626;
+  outline-offset: -7px;
 }
 
 /* Header */
@@ -141,12 +143,12 @@ const formattedDate = computed(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(10px);
-  padding: 0.8rem 1.1rem;
+  background: #ffffff;
   border-radius: 16px;
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border: 1.5px solid #fecaca;
+  border-top: 3px solid #dc2626;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
+  padding: 0.8rem 1.1rem;
 }
 
 .logo-box {
@@ -156,7 +158,7 @@ const formattedDate = computed(() => {
   background: #ffffff;
   padding: 2.5px;
   border: 2px solid #fbbf24;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
   flex-shrink: 0;
 }
 
@@ -174,15 +176,14 @@ const formattedDate = computed(() => {
 .tribute-org-title {
   font-size: 1.25rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #0f172a;
   line-height: 1.2;
   letter-spacing: -0.2px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .tribute-congrats-line {
   font-size: 0.78rem;
-  color: #fef08a;
+  color: #dc2626;
   font-weight: 700;
   margin-top: 0.2rem;
 }
@@ -211,11 +212,11 @@ const formattedDate = computed(() => {
   height: 240px;
   border-radius: 22px;
   overflow: hidden;
-  border: 3.5px solid #fbbf24;
-  outline: 3px solid #be123c;
+  border: 3.5px solid #d97706;
+  outline: 3px solid #dc2626;
   outline-offset: 3px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.3);
-  background: #1e293b;
+  box-shadow: 0 10px 25px rgba(217, 119, 6, 0.18), 0 4px 10px rgba(0, 0, 0, 0.06);
+  background: #f8fafc;
 }
 
 .donor-img {
@@ -233,10 +234,10 @@ const formattedDate = computed(() => {
   width: 74px;
   height: 74px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%);
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 50%, #991b1b 100%);
   color: #ffffff;
   border: 3px solid #fef08a;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6), 0 0 14px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.45);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -248,7 +249,7 @@ const formattedDate = computed(() => {
   font-size: 1.75rem;
   font-weight: 900;
   line-height: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .shield-lbl {
@@ -263,49 +264,49 @@ const formattedDate = computed(() => {
   position: absolute;
   bottom: 8px;
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #0f172a;
+  color: #ffffff;
   padding: 0.28rem 0.85rem;
   border-radius: 999px;
   font-size: 0.76rem;
   font-weight: 900;
-  border: 1.5px solid #fef08a;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  border: 1.5px solid #fef3c7;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
   z-index: 10;
 }
 
 /* Details */
 .tribute-details-card {
   width: 100%;
-  background: linear-gradient(180deg, rgba(20, 25, 45, 0.85) 0%, rgba(12, 16, 30, 0.95) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-top: 3px solid #d97706;
   border-radius: 18px;
   padding: 0.85rem 1.2rem;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .salute-ribbon-tag {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #d97706;
   letter-spacing: 0.5px;
   margin-bottom: 0.25rem;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
 
 .tribute-donor-name {
-  font-size: 1.85rem;
+  font-size: 1.95rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #991b1b;
   line-height: 1.2;
   margin: 0.15rem 0 0.35rem 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .tribute-quote {
   font-size: 0.88rem;
-  color: #fecaca;
+  color: #334155;
   font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
   margin-bottom: 0.45rem;
 }
@@ -326,30 +327,33 @@ const formattedDate = computed(() => {
 }
 
 .date-pill {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #f1f5f9;
+  background: #fff1f2;
+  border: 1.5px solid #fecaca;
+  color: #991b1b;
+  font-weight: 800;
 }
 
 .ref-pill {
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(4, 120, 87, 0.7));
-  border: 1.5px solid #34d399;
-  color: #ecfdf5;
+  background: #f0fdf4;
+  border: 1.5px solid #10b981;
+  color: #065f46;
+  font-weight: 800;
 }
 
 /* Footer */
 .tribute-footer {
-  background: rgba(15, 23, 42, 0.9);
-  border-top: 1.5px solid rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 60%, #991b1b 100%);
+  border-top: 2px solid #d97706;
   padding: 0.6rem 1rem;
   border-radius: 12px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .footer-msg {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
-  color: #fef08a;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 </style>

@@ -101,20 +101,25 @@ function handleLogout() {
 .user-display-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   line-height: 1.2;
 }
 
 .user-username-tag {
   font-size: 0.8rem;
-  color: #fca5a5;
+  color: #dc2626;
   font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .user-username-tag {
+  color: #fca5a5;
 }
 
 .current-org-card {
   padding: 0.85rem;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.25);
   border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
 }
@@ -124,15 +129,19 @@ function handleLogout() {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  color: #fef08a;
+  color: #b45309;
   margin-bottom: 0.25rem;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .org-card-header {
+  color: #fef08a;
 }
 
 .org-current-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
 }
 
 .user-menu-actions {
@@ -146,8 +155,15 @@ function handleLogout() {
 }
 
 .btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .btn-danger {
   background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-color: rgba(239, 68, 68, 0.35);
   color: #fca5a5;
 }
 

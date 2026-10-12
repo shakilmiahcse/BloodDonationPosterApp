@@ -289,8 +289,8 @@ function exportRecordsFile() {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 0.65rem 0.85rem;
   display: flex;
@@ -320,10 +320,16 @@ function exportRecordsFile() {
 
 .mini-bg-pill {
   font-size: 0.7rem;
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .mini-bg-pill {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
 }
 
 .filter-controls-row {
@@ -353,16 +359,20 @@ function exportRecordsFile() {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 0.65rem 0.85rem;
   transition: var(--transition);
 }
 
 .record-item-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(239, 68, 68, 0.3);
+  background: #f1f5f9;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+[data-theme="dark"] .record-item-card:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .record-avatar-box {
@@ -371,7 +381,7 @@ function exportRecordsFile() {
   height: 48px;
   border-radius: 50%;
   overflow: hidden;
-  background: #1e293b;
+  background: #e2e8f0;
   flex-shrink: 0;
   border: 2px solid #ef4444;
 }
@@ -417,7 +427,7 @@ function exportRecordsFile() {
 .rec-donor-name {
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -425,10 +435,16 @@ function exportRecordsFile() {
 
 .rec-count-badge {
   font-size: 0.7rem;
-  background: rgba(245, 158, 11, 0.2);
-  color: #fef08a;
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
   padding: 0.1rem 0.4rem;
   border-radius: 999px;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .rec-count-badge {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fef08a;
 }
 
 .rec-sub-info {
@@ -441,6 +457,11 @@ function exportRecordsFile() {
 }
 
 .rec-ref {
+  color: #b45309;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .rec-ref {
   color: #fef08a;
 }
 

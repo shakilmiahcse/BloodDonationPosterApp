@@ -117,8 +117,8 @@ const formattedDate = computed(() => {
   position: relative;
   width: 100%;
   aspect-ratio: 9 / 14;
-  background: radial-gradient(circle at 50% 20%, #881337 0%, #4c0519 40%, #1c050d 80%, #0a0105 100%);
-  color: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #fffbf5 25%, #fff1f2 70%, #fee2e2 100%);
+  color: #0f172a;
   padding: 1.2rem 1.3rem;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
@@ -126,7 +126,9 @@ const formattedDate = computed(() => {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border: 3px solid #f59e0b;
+  border: 3.5px solid #dc2626;
+  outline: 2px solid #d97706;
+  outline-offset: -7px;
 }
 
 /* Header */
@@ -134,12 +136,12 @@ const formattedDate = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
+  background: #ffffff;
   padding: 0.65rem 1rem;
   border-radius: 999px;
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  border: 1.5px solid #fecaca;
+  border-top: 3px solid #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
 }
 
 .org-brand-chip {
@@ -170,7 +172,7 @@ const formattedDate = computed(() => {
 .org-name-text {
   font-size: 0.96rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -179,9 +181,9 @@ const formattedDate = computed(() => {
 .story-hashtag {
   font-size: 0.72rem;
   font-weight: 800;
-  color: #fef08a;
-  background: rgba(220, 38, 38, 0.4);
-  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #dc2626;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
 }
@@ -197,17 +199,18 @@ const formattedDate = computed(() => {
 }
 
 .quote-banner {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(185, 28, 28, 0.4));
-  border: 1px solid rgba(251, 191, 36, 0.5);
+  background: #fff1f2;
+  border: 1.5px solid #fecaca;
   padding: 0.4rem 1.1rem;
   border-radius: 999px;
   margin-bottom: 0.75rem;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.06);
 }
 
 .quote-main {
   font-size: 0.8rem;
-  font-weight: 700;
-  color: #fef08a;
+  font-weight: 800;
+  color: #991b1b;
 }
 
 .photo-hero-wrapper {
@@ -224,11 +227,11 @@ const formattedDate = computed(() => {
   height: 250px;
   border-radius: 22px;
   overflow: hidden;
-  border: 3.5px solid #fbbf24;
-  outline: 3px solid #be123c;
+  border: 3.5px solid #d97706;
+  outline: 3px solid #dc2626;
   outline-offset: 3px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(239, 68, 68, 0.4);
-  background: #1e293b;
+  box-shadow: 0 12px 28px rgba(185, 28, 28, 0.16);
+  background: #f8fafc;
 }
 
 .donor-photo {
@@ -245,9 +248,9 @@ const formattedDate = computed(() => {
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 65%, #7f1d1d 100%);
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 50%, #991b1b 100%);
   border: 3px solid #fef08a;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 14px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.45);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -273,58 +276,58 @@ const formattedDate = computed(() => {
   position: absolute;
   bottom: 8px;
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border: 1.5px solid #fef08a;
+  border: 1.5px solid #fef3c7;
   padding: 0.28rem 0.85rem;
   border-radius: 999px;
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  color: #0f172a;
+  color: #ffffff;
   font-weight: 900;
   font-size: 0.76rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
   z-index: 10;
 }
 
 /* Name Card */
 .donor-name-banner {
   width: 100%;
-  background: linear-gradient(180deg, rgba(20, 25, 45, 0.85) 0%, rgba(12, 16, 30, 0.95) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-top: 3px solid #d97706;
   border-radius: 18px;
   padding: 0.75rem 1.1rem;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.1);
 }
 
 .donor-hero-tag {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #d97706;
   margin-bottom: 0.2rem;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
 
 .name-text {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #991b1b;
   line-height: 1.2;
   margin: 0.15rem 0 0.35rem 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .sub-quote {
   font-size: 0.86rem;
-  color: #fecaca;
+  color: #334155;
   font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
 }
 
 /* Footer */
 .story-footer {
   text-align: center;
-  border-top: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-top: 1.5px solid #fecaca;
   padding-top: 0.65rem;
 }
 
@@ -344,21 +347,27 @@ const formattedDate = computed(() => {
 }
 
 .date-pill {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #f1f5f9;
+  background: #fff1f2;
+  border: 1.5px solid #fecaca;
+  color: #991b1b;
+  font-weight: 800;
 }
 
 .ref-pill {
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(4, 120, 87, 0.7));
-  border: 1.5px solid #34d399;
-  color: #ecfdf5;
+  background: #f0fdf4;
+  border: 1.5px solid #10b981;
+  color: #065f46;
+  font-weight: 800;
 }
 
 .slogan-footer {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  color: #fef08a;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
 }
 </style>

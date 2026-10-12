@@ -140,27 +140,27 @@ const formattedDate = computed(() => {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5.2;
-  background: radial-gradient(circle at 50% 18%, #881337 0%, #4c0519 45%, #25020a 85%, #150105 100%);
-  color: #fff;
+  background: radial-gradient(circle at 50% 12%, #ffffff 0%, #fffbf5 40%, #fff1f2 80%, #fee2e2 100%);
+  color: #0f172a;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
-  border: 3px solid #f59e0b;
-  outline: 4px solid #7f1d1d;
+  border: 3.5px solid #dc2626;
+  outline: 2px solid #d97706;
   outline-offset: -7px;
 }
 
 /* Ornate Corner Emblems */
 .corner-filigree {
   position: absolute;
-  font-size: 1.1rem;
-  color: #fbbf24;
+  font-size: 1.15rem;
+  color: #d97706;
   line-height: 1;
   z-index: 5;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+  text-shadow: 0 0 6px rgba(217, 119, 6, 0.4);
   pointer-events: none;
 }
 .corner-filigree.top-left { top: 10px; left: 10px; }
@@ -171,13 +171,13 @@ const formattedDate = computed(() => {
 /* Header */
 .card-top-branding {
   position: relative;
-  background: linear-gradient(180deg, rgba(20, 2, 7, 0.85) 0%, rgba(76, 5, 25, 0.9) 100%);
-  border-bottom: 2px solid rgba(245, 158, 11, 0.5);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 60%, #991b1b 100%);
+  border-bottom: 3px solid #d97706;
   padding: 0.95rem 1.4rem 0.85rem 1.4rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.25);
   z-index: 2;
 }
 
@@ -188,7 +188,7 @@ const formattedDate = computed(() => {
   background: #ffffff;
   padding: 2.5px;
   border: 2.5px solid #fbbf24;
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.7), 0 3px 8px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -213,26 +213,27 @@ const formattedDate = computed(() => {
   color: #ffffff;
   line-height: 1.2;
   letter-spacing: -0.3px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .org-subtitle-text {
   font-size: 0.82rem;
-  color: #fecaca;
+  color: #fef08a;
   margin-top: 0.15rem;
+  font-weight: 600;
 }
 
 .org-slogan-pill {
   display: inline-block;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(185, 28, 28, 0.4));
-  border: 1px solid rgba(251, 191, 36, 0.6);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(254, 240, 138, 0.85);
   padding: 0.2rem 0.75rem;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fef08a;
+  color: #ffffff;
   margin-top: 0.3rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Main Area */
@@ -261,11 +262,11 @@ const formattedDate = computed(() => {
   height: 245px;
   border-radius: 20px;
   overflow: hidden;
-  border: 3.5px solid #fbbf24;
-  outline: 3px solid #be123c;
+  border: 3.5px solid #d97706;
+  outline: 3px solid #dc2626;
   outline-offset: 3px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(239, 68, 68, 0.4);
-  background: #1e293b;
+  box-shadow: 0 12px 28px rgba(185, 28, 28, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #f8fafc;
   position: relative;
 }
 
@@ -284,9 +285,9 @@ const formattedDate = computed(() => {
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 60%, #7f1d1d 100%);
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 50%, #991b1b 100%);
   border: 3px solid #fef08a;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -304,7 +305,7 @@ const formattedDate = computed(() => {
   font-size: 1.8rem;
   font-weight: 900;
   letter-spacing: -0.5px;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .bg-group-tag {
@@ -330,68 +331,67 @@ const formattedDate = computed(() => {
 }
 
 .donation-date-pill {
-  background: rgba(15, 23, 42, 0.9);
-  border: 1.5px solid rgba(251, 191, 36, 0.7);
+  background: #ffffff;
+  border: 1.5px solid #dc2626;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   font-size: 0.74rem;
-  font-weight: 700;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-}
-
-.donation-count-tag {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border: 1.5px solid #fef08a;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.76rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #0f172a;
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.donation-count-tag {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 1.5px solid #fef3c7;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
 }
 
 /* Donor Tribute Plaque */
 .donor-tribute-box {
   width: 100%;
-  background: linear-gradient(180deg, rgba(24, 7, 14, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.55);
+  background: #ffffff;
+  border: 1.5px solid #fecaca;
+  border-top: 3px solid #dc2626;
   border-radius: 18px;
   padding: 0.85rem 1.2rem;
   text-align: center;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.15);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.09), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .tribute-badge-label {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #d97706;
   letter-spacing: 0.6px;
-  margin-bottom: 0.3rem;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  margin-bottom: 0.25rem;
 }
 
 .donor-highlight-name {
-  font-size: 1.85rem;
+  font-size: 1.9rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #991b1b;
   line-height: 1.2;
   margin: 0.15rem 0 0.35rem 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
   letter-spacing: -0.3px;
 }
 
 .donor-motto-quote {
   font-size: 0.88rem;
-  color: #fecaca;
+  color: #334155;
   font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
   margin-bottom: 0.4rem;
   max-width: 95%;
@@ -404,40 +404,41 @@ const formattedDate = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(4, 120, 87, 0.7));
-  border: 1.5px solid #34d399;
+  background: #f0fdf4;
+  border: 1.5px solid #10b981;
   padding: 0.3rem 0.85rem;
   border-radius: 999px;
   font-size: 0.76rem;
-  color: #ecfdf5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  color: #065f46;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
   margin-top: 0.25rem;
 }
 
 .ref-label {
-  font-weight: 600;
-  color: #a7f3d0;
+  font-weight: 700;
+  color: #047857;
 }
 
 .ref-name {
   font-weight: 800;
-  color: #ffffff;
+  color: #064e3b;
 }
 
 /* Bottom Bar */
 .card-bottom-bar {
-  background: linear-gradient(180deg, rgba(76, 5, 25, 0.9) 0%, rgba(20, 2, 7, 0.95) 100%);
-  border-top: 2px solid rgba(245, 158, 11, 0.5);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+  border-top: 3px solid #d97706;
   padding: 0.65rem 1rem;
   text-align: center;
   z-index: 2;
+  box-shadow: 0 -2px 10px rgba(185, 28, 28, 0.15);
 }
 
 .footer-motto-text {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
-  color: #fef08a;
+  color: #ffffff;
   letter-spacing: 0.3px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 </style>

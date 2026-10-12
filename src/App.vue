@@ -11,6 +11,17 @@
       </div>
 
       <div class="header-actions">
+        <!-- Theme Switcher Button (Default: Light Mode) -->
+        <button 
+          class="btn btn-secondary btn-sm theme-toggle-btn" 
+          @click="toggleTheme"
+          id="btn-theme-toggle"
+          :title="currentTheme === 'dark' ? (currentLang === 'bn' ? 'লাইট মোডে পরিবর্তন করুন' : 'Switch to Light Mode') : (currentLang === 'bn' ? 'ডার্ক মোডে পরিবর্তন করুন' : 'Switch to Dark Mode')"
+        >
+          <span class="theme-icon">{{ currentTheme === 'dark' ? '☀️' : '🌙' }}</span>
+          <span class="theme-text">{{ currentTheme === 'dark' ? (currentLang === 'bn' ? 'লাইট' : 'Light') : (currentLang === 'bn' ? 'ডার্ক' : 'Dark') }}</span>
+        </button>
+
         <!-- Language Switcher Button (Default: English) -->
         <button 
           class="btn btn-secondary btn-sm lang-toggle-btn" 
@@ -201,6 +212,25 @@ const formData = reactive({
   dateFormat: 'numeric'
 });
 
+// Theme system (Default: Light Mode)
+const currentTheme = ref(localStorage.getItem('blood_app_theme') || 'light');
+
+function applyTheme(theme) {
+  currentTheme.value = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('blood_app_theme', theme);
+}
+
+function toggleTheme() {
+  const next = currentTheme.value === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  if (currentLang.value === 'bn') {
+    showToast(next === 'dark' ? '🌙 ডার্ক মোড চালু হয়েছে' : '☀️ লাইট মোড চালু হয়েছে');
+  } else {
+    showToast(next === 'dark' ? '🌙 Dark Mode activated' : '☀️ Light Mode activated');
+  }
+}
+
 // Toast system
 const toasts = ref([]);
 function showToast(text) {
@@ -217,6 +247,9 @@ function toggleAppLanguage() {
 }
 
 onMounted(async () => {
+  // Ensure default Light theme or restored user preference is applied
+  applyTheme(currentTheme.value);
+
   const auth = await api.checkAuth();
   authState.authenticated = auth.authenticated;
   authState.user = auth.user;
@@ -314,18 +347,18 @@ function loadRecord(rec) {
 </script>
 
 <style scoped>
+.theme-toggle-btn,
 .lang-toggle-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
 }
 
-.lang-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: #ef4444;
+.theme-icon, .lang-icon {
+  font-size: 0.95rem;
 }
 
 @media (max-width: 1023px) {

@@ -123,27 +123,27 @@ const formattedDate = computed(() => {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5.2;
-  background: linear-gradient(145deg, #090e1a 0%, #151e33 45%, #3d0718 90%, #150208 100%);
-  color: #fff;
+  background: linear-gradient(155deg, #ffffff 0%, #fafaf9 35%, #fff1f2 75%, #fee2e2 100%);
+  color: #0f172a;
   padding: 1.2rem 1.4rem;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 3px solid #f59e0b;
-  outline: 4px solid #991b1b;
+  border: 3.5px solid #dc2626;
+  outline: 2px solid #d97706;
   outline-offset: -7px;
   overflow: hidden;
 }
 
 .ed-corner {
   position: absolute;
-  font-size: 1.1rem;
-  color: #fbbf24;
+  font-size: 1.15rem;
+  color: #d97706;
   line-height: 1;
   z-index: 5;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+  text-shadow: 0 0 6px rgba(217, 119, 6, 0.4);
 }
 .ed-tl { top: 10px; left: 10px; }
 .ed-tr { top: 10px; right: 10px; }
@@ -156,7 +156,7 @@ const formattedDate = computed(() => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border-bottom: 2px solid rgba(245, 158, 11, 0.4);
+  border-bottom: 2px solid #fecaca;
   padding-bottom: 0.8rem;
 }
 
@@ -174,7 +174,7 @@ const formattedDate = computed(() => {
   background: #fff;
   padding: 2.5px;
   border: 2px solid #fbbf24;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
   flex-shrink: 0;
 }
 
@@ -192,23 +192,23 @@ const formattedDate = computed(() => {
 .ed-org-title {
   font-size: 1.22rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #0f172a;
   line-height: 1.2;
   letter-spacing: -0.2px;
 }
 
 .ed-slogan-line {
   font-size: 0.76rem;
-  color: #fef08a;
+  color: #dc2626;
   font-weight: 700;
   margin-top: 0.2rem;
 }
 
 /* Blood Box */
 .ed-blood-box {
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #b91c1c 70%, #7f1d1d 100%);
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 55%, #991b1b 100%);
   border: 2px solid #fef08a;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
   padding: 0.35rem 0.85rem;
   border-radius: 14px;
   text-align: center;
@@ -255,11 +255,11 @@ const formattedDate = computed(() => {
   height: 225px;
   border-radius: 18px;
   overflow: hidden;
-  border: 3.5px solid #fbbf24;
-  outline: 3px solid #be123c;
+  border: 3.5px solid #d97706;
+  outline: 3px solid #dc2626;
   outline-offset: 3px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(245, 158, 11, 0.3);
-  background: #1e293b;
+  box-shadow: 0 10px 25px rgba(185, 28, 28, 0.16);
+  background: #f8fafc;
 }
 
 .ed-photo {
@@ -273,46 +273,48 @@ const formattedDate = computed(() => {
   position: absolute;
   bottom: 6px;
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #0f172a;
+  color: #ffffff;
   padding: 0.25rem 0.8rem;
   border-radius: 999px;
   font-size: 0.76rem;
   font-weight: 900;
-  border: 1.5px solid #fef08a;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border: 1.5px solid #fef3c7;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
 }
 
 /* Details */
 .ed-details {
   width: 100%;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  background: #ffffff;
+  border: 1.5px solid #fecaca;
+  border-top: 3px solid #dc2626;
   border-radius: 16px;
   padding: 0.75rem 1.1rem;
   text-align: center;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.08);
 }
 
 .donor-designation {
   font-size: 0.76rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #d97706;
   letter-spacing: 0.5px;
   margin-bottom: 0.2rem;
 }
 
 .ed-donor-name {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 900;
-  color: #ffffff;
+  color: #991b1b;
   line-height: 1.2;
   margin: 0.15rem 0 0.3rem 0;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .ed-quote {
   font-size: 0.86rem;
-  color: #fecaca;
+  color: #334155;
   font-style: italic;
+  font-weight: 500;
   line-height: 1.35;
   margin-bottom: 0.4rem;
 }
@@ -329,45 +331,46 @@ const formattedDate = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #fff1f2;
+  border: 1.5px solid #fecaca;
   padding: 0.22rem 0.75rem;
   border-radius: 999px;
   font-size: 0.74rem;
 }
 
 .meta-label {
-  color: #94a3b8;
-  font-weight: 600;
+  color: #dc2626;
+  font-weight: 700;
 }
 
 .meta-val {
-  color: #f1f5f9;
+  color: #0f172a;
   font-weight: 800;
 }
 
 .ref-card {
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(4, 120, 87, 0.7));
-  border-color: #34d399;
+  background: #f0fdf4;
+  border-color: #10b981;
 }
 .ref-card .meta-label {
-  color: #a7f3d0;
+  color: #047857;
+  font-weight: 700;
 }
 .ref-card .meta-val {
-  color: #ffffff;
+  color: #064e3b;
+  font-weight: 800;
 }
 
 /* Footer */
 .ed-footer {
-  border-top: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-top: 2px solid #fecaca;
   padding-top: 0.65rem;
   text-align: center;
 }
 
 .footer-msg {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  color: #fef08a;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  color: #991b1b;
 }
 </style>
