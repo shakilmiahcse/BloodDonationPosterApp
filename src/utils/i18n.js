@@ -307,6 +307,6 @@ export const quotePresets = {
 };
 
 export const countPresets = {
-  en: ['1st Time', '2nd Time', '3rd Time', '4th Time', '5th Time', '10th Time', '25th Time', '50th Time'],
-  bn: ['১ম বার', '২য় বার', '৩য় বার', '৪র্থ বার', '৫ম বার', '১০ম বার', '২৫তম বার', '৫০তম বার']
+  en: ['1st Time', '2nd Time', '3rd Time', '4th Time', '5th Time'],
+  bn: ['১ম বার', '২য় বার', '৩য় বার', '৪র্থ বার', '৫ম বার']
 };

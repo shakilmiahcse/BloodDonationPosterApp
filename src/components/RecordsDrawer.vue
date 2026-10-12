@@ -126,8 +126,11 @@
           <button class="btn btn-secondary btn-sm" @click="fetchRecords">
             {{ t('refreshBtn') }}
           </button>
+          <button class="btn btn-secondary btn-sm" @click="exportRecordsCSV">
+            📊 {{ currentLang === 'bn' ? 'এক্সেল শিট (CSV)' : 'Excel (CSV)' }}
+          </button>
           <button class="btn btn-primary btn-sm" @click="exportRecordsFile">
-            {{ t('exportFileBtn') }}
+            💾 {{ t('exportFileBtn') }}
           </button>
         </div>
       </div>
@@ -204,6 +207,39 @@ async function deleteRecord(id) {
   await api.deleteRecord(id);
   records.value = records.value.filter(r => r.id !== id);
   emit('notify', currentLang.value === 'bn' ? 'রেকর্ডটি মোছা হয়েছে।' : 'Record deleted.');
+}
+
+function exportRecordsCSV() {
+  if (!records.value || records.value.length === 0) {
+    emit('notify', currentLang.value === 'bn' ? 'ডাউনলোড করার মত কোনো রেকর্ড নেই!' : 'No records to export!');
+    return;
+  }
+  
+  const headers = currentLang.value === 'bn'
+    ? ['আইডি', 'রক্তদাতার নাম', 'রক্তের গ্রুপ', 'রক্তদানের সংখ্যা', 'রক্তদানের তারিখ', 'রেফারেন্স / সংগ্রাহক', 'সংগঠনের নাম', 'স্লোগান / বাণী']
+    : ['ID', 'Donor Name', 'Blood Group', 'Donation Count', 'Donation Date', 'Referred By', 'Organization Name', 'Quote'];
+
+  const rows = records.value.map(r => [
+    `"${(r.id || '').replace(/"/g, '""')}"`,
+    `"${(r.donorName || '').replace(/"/g, '""')}"`,
+    `"${(r.bloodGroup || '').replace(/"/g, '""')}"`,
+    `"${(r.donationCount || '').replace(/"/g, '""')}"`,
+    `"${(r.donationDate || '').replace(/"/g, '""')}"`,
+    `"${(r.referenceName || '').replace(/"/g, '""')}"`,
+    `"${(r.orgName || '').replace(/"/g, '""')}"`,
+    `"${(r.quote || '').replace(/"/g, '""')}"`
+  ]);
+
+  // UTF-8 BOM (\uFEFF) ensures Excel renders Bengali script correctly!
+  const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `blood_donors_list_${Date.now()}.csv`);
+  link.click();
+  URL.revokeObjectURL(url);
+  emit('notify', currentLang.value === 'bn' ? 'এক্সেল ফাইল (CSV) ডাউনলোড হয়েছে!' : 'Spreadsheet (CSV) exported!');
 }
 
 function exportRecordsFile() {

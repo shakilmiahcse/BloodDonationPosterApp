@@ -36,7 +36,7 @@ export function formatBengaliDate(dateStr, style = 'numeric') {
   return dateStr;
 }
 
-export function generateSocialCaption(donorData) {
+export function generateSocialCaption(donorData, lang = 'bn') {
   const {
     donorName,
     bloodGroup,
@@ -46,20 +46,38 @@ export function generateSocialCaption(donorData) {
     orgName,
     orgSubtitle,
     quote
-  } = donorData;
+  } = donorData || {};
 
+  const cleanOrgName = (orgName && orgName.trim()) || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ';
+  const cleanRef = (referenceName && referenceName.trim()) || '';
   const dateFormatted = formatBengaliDate(donationDate, 'full');
-  const org = orgSubtitle || orgName || 'আমাদের ব্লাড ব্যাংক';
 
+  if (lang === 'en') {
+    let caption = `🩸 A Noble Example of Voluntary Service! 🩸\n\n`;
+    caption += `Honorable Blood Donor: ${donorName || 'Blood Hero'}\n`;
+    caption += `Blood Group: ${bloodGroup || 'O+'}\n`;
+    if (donationCount) caption += `Donation Count: ${donationCount}\n`;
+    if (donationDate) caption += `Date: ${donationDate}\n`;
+    if (cleanRef) caption += `Referred / Assisted By: ${cleanRef}\n`;
+    caption += `Organization: ${cleanOrgName}\n`;
+    if (orgSubtitle) caption += `Motto: ${orgSubtitle}\n`;
+    caption += `\n"${quote || 'Blood donation is the greatest gift of life'}"\n\n`;
+    caption += `A single donation can save a dying patient's life. We extend our warmest congratulations and heartfelt gratitude for your selfless contribution. Stay healthy, stand beside humanity. ❤️\n\n`;
+    caption += `#BloodDonation #SaveLives #BloodDonor #Humanity`;
+    return caption;
+  }
+
+  // Bengali Caption (Default)
   let caption = `🩸 মানবতার সেবায় এক অনন্য দৃষ্টান্ত! 🩸\n\n`;
-  caption += `সম্মানিত রক্তদাতা: ${donorName}\n`;
-  caption += `রক্তের গ্রুপ: ${bloodGroup}\n`;
+  caption += `সম্মানিত রক্তদাতা: ${donorName || 'রক্তযোদ্ধা'}\n`;
+  caption += `রক্তের গ্রুপ: ${bloodGroup || 'O+'}\n`;
   if (donationCount) caption += `রক্তদানের সংখ্যা: ${donationCount}\n`;
   if (donationDate) caption += `রক্তদানের তারিখ: ${dateFormatted} (${donationDate})\n`;
-  if (referenceName) caption += `রেফারেন্স / সহযোগিতায়: ${referenceName}\n`;
-  caption += `সংগঠন: ${org}\n\n`;
-  caption += `"${quote || 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার'}"\n\n`;
-  caption += `মুহূর্তের একটি রক্তদান বাঁচাতে পারে একটি মুমূর্ষু রোগীর প্রাণ। আপনার এই নিঃস্বার্থ ত্যাগের জন্য আমরা আন্তরিক মোবারকবাদ ও শুভেচ্ছা জানাচ্ছি। সুস্থ থাকুন, মানবতার পাশে থাকুন। ❤️\n\n`;
+  if (cleanRef) caption += `রেফারেন্স / সহযোগিতায়: ${cleanRef}\n`;
+  caption += `সংগঠন: ${cleanOrgName}\n`;
+  if (orgSubtitle) caption += `স্লোগান: ${orgSubtitle}\n`;
+  caption += `\n"${quote || 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার'}"\n\n`;
+  caption += `মুহূর্তের একটি রক্তদান বাঁচাতে পারে একটি মুমূর্ষু রোগীর প্রাণ। আপনার এই নিঃস্বার্থ ত্যাগের জন্য আমরা আন্তরিক মোবারকবাদ ও রক্তিম শুভেচ্ছা জানাচ্ছি। সুস্থ থাকুন, মানবতার পাশে থাকুন। ❤️\n\n`;
   caption += `#BloodDonation #রক্তদান #মানবতার_কল্যাণে #রক্তযোদ্ধা #SaveLives`;
 
   return caption;

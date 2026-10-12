@@ -85,7 +85,7 @@ import { ref, computed, onMounted } from 'vue';
 import * as htmlToImage from 'html-to-image';
 import confetti from 'canvas-confetti';
 import { generateSocialCaption } from '../utils/bengaliUtils';
-import { t } from '../utils/i18n';
+import { t, currentLang } from '../utils/i18n';
 
 // Templates
 import TemplateClassic from './templates/TemplateClassic.vue';
@@ -186,7 +186,7 @@ async function downloadImage(format = 'png') {
 
 // WhatsApp Direct Share
 function shareDirectWhatsApp() {
-  const caption = generateSocialCaption(props.formData);
+  const caption = generateSocialCaption(props.formData, currentLang.value);
   const encodedText = encodeURIComponent(caption);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
   window.open(whatsappUrl, '_blank');
@@ -203,7 +203,7 @@ async function shareNative() {
     const filename = `blood_donor_${Date.now()}.png`;
     const file = new File([blob], filename, { type: 'image/png' });
 
-    const caption = generateSocialCaption(props.formData);
+    const caption = generateSocialCaption(props.formData, currentLang.value);
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
@@ -230,7 +230,7 @@ async function shareNative() {
 
 // Copy Wish Caption
 async function copyCaptionText() {
-  const caption = generateSocialCaption(props.formData);
+  const caption = generateSocialCaption(props.formData, currentLang.value);
   try {
     await navigator.clipboard.writeText(caption);
     emit('notify', t('toastCopied'));

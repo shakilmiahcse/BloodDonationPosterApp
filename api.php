@@ -41,7 +41,7 @@ function getUsers() {
 
 function saveUsers($users) {
     global $usersFile;
-    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 function getRecords() {
@@ -52,7 +52,7 @@ function getRecords() {
 
 function saveRecords($records) {
     global $recordsFile;
-    file_put_contents($recordsFile, json_encode($records, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents($recordsFile, json_encode($records, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 function getCurrentUser() {
@@ -153,7 +153,7 @@ switch ($action) {
         $newUser = [
             "id" => $userId,
             "username" => $username,
-            "password" => $password,
+            "password" => password_hash($password, PASSWORD_DEFAULT),
             "name" => $name,
             "token" => $token,
             "orgSettings" => $orgSettings,
@@ -197,10 +197,18 @@ switch ($action) {
         $matchedIndex = -1;
 
         foreach ($users as $idx => $u) {
-            if ($u['username'] === $username && $u['password'] === $password) {
-                $matchedUser = $u;
-                $matchedIndex = $idx;
-                break;
+            if ($u['username'] === $username) {
+                // Verify hashed password, with legacy fallback for plaintext
+                $isPassValid = password_verify($password, $u['password']) || ($u['password'] === $password);
+                if ($isPassValid) {
+                    $matchedUser = $u;
+                    $matchedIndex = $idx;
+                    // Auto-rehash if stored in plaintext
+                    if ($u['password'] === $password) {
+                        $users[$idx]['password'] = password_hash($password, PASSWORD_DEFAULT);
+                    }
+                    break;
+                }
             }
         }
 

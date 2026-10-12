@@ -297,6 +297,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { t, currentLang, quotePresets, countPresets } from '../utils/i18n';
+import { compressImageFile } from '../utils/imageUtils';
 
 const props = defineProps({
   formData: {
@@ -351,7 +352,7 @@ function triggerLogoInput() {
   if (logoFileInput.value) logoFileInput.value.click();
 }
 
-function handlePhotoUpload(e) {
+async function handlePhotoUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
 
@@ -360,30 +361,48 @@ function handlePhotoUpload(e) {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    props.formData.donorPhoto = event.target.result;
+  try {
+    const compressed = await compressImageFile(file, 1200, 1200, 0.88);
+    props.formData.donorPhoto = compressed;
     props.formData.photoZoom = 1;
     props.formData.photoPanX = 0;
     props.formData.photoPanY = 0;
     emit('notify', t('toastPhotoLoaded'));
-  };
-  reader.readAsDataURL(file);
+  } catch (err) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      props.formData.donorPhoto = event.target.result;
+      props.formData.photoZoom = 1;
+      props.formData.photoPanX = 0;
+      props.formData.photoPanY = 0;
+      emit('notify', t('toastPhotoLoaded'));
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
-function handleLogoUpload(e) {
+async function handleLogoUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    props.formData.orgLogo = event.target.result;
+  try {
+    const compressed = await compressImageFile(file, 600, 600, 0.92);
+    props.formData.orgLogo = compressed;
     emit('notify', t('toastLogoLoaded'));
     if (props.authState.authenticated) {
       emit('save-org-defaults');
     }
-  };
-  reader.readAsDataURL(file);
+  } catch (err) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      props.formData.orgLogo = event.target.result;
+      emit('notify', t('toastLogoLoaded'));
+      if (props.authState.authenticated) {
+        emit('save-org-defaults');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
 function resetLogoToDefault() {
