@@ -4,9 +4,10 @@
     <header class="story-header">
       <div class="org-brand-chip">
         <div class="story-logo-box">
-          <img :src="logoSrc" alt="Logo" class="story-logo-img" />
+          <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="story-logo-img" />
+          <span v-else class="story-logo-placeholder">🩸</span>
         </div>
-        <span class="org-name-text">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</span>
+        <span class="org-name-text">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</span>
       </div>
       <div class="story-hashtag">#SaveLives</div>
     </header>
@@ -22,6 +23,7 @@
       <div class="photo-hero-wrapper">
         <div class="photo-frame">
           <img 
+            v-if="donorPhotoSrc"
             :src="donorPhotoSrc" 
             alt="Donor" 
             class="donor-photo"
@@ -29,6 +31,12 @@
               transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
             }"
           />
+          <div v-else class="story-photo-placeholder">
+            <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+            </svg>
+            <span class="placeholder-prompt">{{ isBn ? 'ছবি যুক্ত করুন' : 'Add Photo' }}</span>
+          </div>
         </div>
 
         <!-- Overlapping Blood Group Badge (Safely inside stage) -->
@@ -73,8 +81,6 @@
 import { computed } from 'vue';
 import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
-import defaultOrgLogo from '../../assets/default_org_logo.png';
-import defaultDonorPhoto from '../../assets/sample_donor.jpg';
 
 const props = defineProps({
   data: {
@@ -86,17 +92,11 @@ const props = defineProps({
 const isBn = computed(() => currentLang.value === 'bn');
 
 const logoSrc = computed(() => {
-  if (!props.data.orgLogo || props.data.orgLogo === '/default_org_logo.png' || props.data.orgLogo === './default_org_logo.png') {
-    return defaultOrgLogo;
-  }
-  return props.data.orgLogo;
+  return props.data.orgLogo || '';
 });
 
 const donorPhotoSrc = computed(() => {
-  if (!props.data.donorPhoto || props.data.donorPhoto === '/sample_donor.jfif' || props.data.donorPhoto === './sample_donor.jfif' || props.data.donorPhoto === '/sample_donor.jpg') {
-    return defaultDonorPhoto;
-  }
-  return props.data.donorPhoto;
+  return props.data.donorPhoto || '';
 });
 
 const hasReference = computed(() => {
@@ -166,6 +166,17 @@ const formattedDate = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 50%;
+}
+
+.story-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.25rem;
+  background: #fee2e2;
   border-radius: 50%;
 }
 
@@ -239,6 +250,34 @@ const formattedDate = computed(() => {
   height: 100%;
   object-fit: cover;
   transition: transform 0.1s ease-out;
+}
+
+.story-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #94a3b8;
+  gap: 0.5rem;
+}
+
+.placeholder-avatar-svg {
+  width: 64px;
+  height: 64px;
+  opacity: 0.6;
+}
+
+.placeholder-prompt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  background: #ffffff;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  border: 1px dashed #cbd5e1;
 }
 
 .story-bg-badge {

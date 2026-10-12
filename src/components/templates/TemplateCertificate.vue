@@ -11,10 +11,11 @@
       <!-- Header with Circular Org Logo -->
       <header class="cert-header">
         <div class="cert-logo-row">
-          <img :src="logoSrc" alt="Logo" class="cert-org-logo" />
+          <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="cert-org-logo" />
+          <span v-else class="cert-logo-placeholder">🩸</span>
         </div>
         <div class="cert-badge">🏅 {{ isBn ? 'সম্মাননা ও কৃতজ্ঞতা স্মারক' : 'CERTIFICATE OF HONOR & GRATITUDE' }}</div>
-        <h1 class="cert-org-name">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</h1>
+        <h1 class="cert-org-name">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</h1>
         <p v-if="data.heroQuote" class="cert-motto">“{{ data.heroQuote }}”</p>
       </header>
 
@@ -27,6 +28,7 @@
           <div class="cert-photo-wrapper">
             <div class="cert-photo-frame">
               <img 
+                v-if="donorPhotoSrc"
                 :src="donorPhotoSrc" 
                 alt="Donor" 
                 class="cert-photo"
@@ -34,6 +36,12 @@
                   transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
                 }"
               />
+              <div v-else class="cert-photo-placeholder">
+                <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                </svg>
+                <span class="placeholder-prompt">{{ isBn ? 'ছবি যুক্ত করুন' : 'Add Photo' }}</span>
+              </div>
             </div>
             <div class="cert-count-ribbon">
               {{ data.donationCount || (isBn ? '১ম বার রক্তদান সম্পন্ন' : '1st Blood Donation') }}
@@ -76,7 +84,7 @@
         </div>
 
         <div class="sign-block right">
-          <div class="sign-val">{{ hasReference ? data.referenceName : (data.orgName || 'কর্তৃপক্ষ') }}</div>
+          <div class="sign-val">{{ hasReference ? data.referenceName : (data.orgName || (isBn ? 'কর্তৃপক্ষ' : 'Authority')) }}</div>
           <div class="sign-line"></div>
           <div class="sign-title">{{ hasReference ? (isBn ? 'রেফারেন্স / সংগ্রাহক' : 'Referred By') : (isBn ? 'স্বাক্ষর ও পরিচালনা' : 'Authorized Signature') }}</div>
         </div>
@@ -89,8 +97,6 @@
 import { computed } from 'vue';
 import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
-import defaultOrgLogo from '../../assets/default_org_logo.png';
-import defaultDonorPhoto from '../../assets/sample_donor.jpg';
 
 const props = defineProps({
   data: {
@@ -102,17 +108,11 @@ const props = defineProps({
 const isBn = computed(() => currentLang.value === 'bn');
 
 const logoSrc = computed(() => {
-  if (!props.data.orgLogo || props.data.orgLogo === '/default_org_logo.png' || props.data.orgLogo === './default_org_logo.png') {
-    return defaultOrgLogo;
-  }
-  return props.data.orgLogo;
+  return props.data.orgLogo || '';
 });
 
 const donorPhotoSrc = computed(() => {
-  if (!props.data.donorPhoto || props.data.donorPhoto === '/sample_donor.jfif' || props.data.donorPhoto === './sample_donor.jfif' || props.data.donorPhoto === '/sample_donor.jpg') {
-    return defaultDonorPhoto;
-  }
-  return props.data.donorPhoto;
+  return props.data.donorPhoto || '';
 });
 
 const hasReference = computed(() => {
@@ -182,6 +182,18 @@ const formattedDate = computed(() => {
   border-radius: 50%;
   border: 2px solid #b91c1c;
   background: #fff;
+}
+
+.cert-logo-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fee2e2;
+  border: 2px solid #b91c1c;
+  font-size: 1.5rem;
 }
 
 .cert-badge {
@@ -257,6 +269,34 @@ const formattedDate = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.cert-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #94a3b8;
+  gap: 0.35rem;
+}
+
+.placeholder-avatar-svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.6;
+}
+
+.placeholder-prompt {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #fff;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  border: 1px dashed #cbd5e1;
 }
 
 .cert-count-ribbon {

@@ -23,7 +23,7 @@
           <span class="org-icon">🏛️</span>
           <span class="org-label">{{ t('savedOrgLabel') }}:</span>
         </div>
-        <p class="org-current-name">{{ orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</p>
+        <p class="org-current-name">{{ orgName || (isBn ? 'কোনো সংগঠন সংরক্ষিত নেই' : 'No organization saved yet') }}</p>
       </div>
 
       <div class="user-menu-actions">
@@ -42,7 +42,10 @@
 </template>
 
 <script setup>
-import { t } from '../utils/i18n';
+import { computed } from 'vue';
+import { t, currentLang } from '../utils/i18n';
+
+const isBn = computed(() => currentLang.value === 'bn');
 
 const props = defineProps({
   user: {

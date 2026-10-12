@@ -44,9 +44,9 @@ export const translations = {
     orgLogoLabel: 'Organization Logo',
     uploadLogoPrompt: 'Upload Custom Logo',
     changeLogoPrompt: 'Change Logo',
-    resetLogoPrompt: 'Reset Default Logo',
+    resetLogoPrompt: 'Remove Logo',
     orgNameLabel: 'Organization Name',
-    orgNamePlaceholder: 'e.g. Char Shibpur Uttarpara Manob Sheba Jubo Shongho',
+    orgNamePlaceholder: 'e.g. Life Care Blood Donation Club',
     orgSubtitleLabel: 'Organization Subtitle / Tagline',
     orgSubtitlePlaceholder: 'e.g. Voluntary Blood Donation Wing',
     sloganLabel: 'Motto Line',
@@ -54,7 +54,7 @@ export const translations = {
 
     // Donor Fields
     donorName: 'Donor Full Name',
-    donorNamePlaceholder: 'e.g. Md. Jamal Uddin',
+    donorNamePlaceholder: 'Enter donor full name',
     bloodGroup: 'Blood Group',
     donationCount: 'Donation Frequency / Count',
     donationCountPlaceholder: 'e.g. 1st Time, 5th Time...',
@@ -177,9 +177,9 @@ export const translations = {
     orgLogoLabel: 'সংগঠনের লোগো',
     uploadLogoPrompt: 'লোগো আপলোড করুন',
     changeLogoPrompt: 'লোগো পরিবর্তন',
-    resetLogoPrompt: 'ডিফল্ট লোগো রিসেট',
+    resetLogoPrompt: 'লোগো মুছে ফেলুন',
     orgNameLabel: 'সংগঠনের নাম',
-    orgNamePlaceholder: 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ',
+    orgNamePlaceholder: 'সংগঠন বা ক্লাবের নাম লিখুন',
     orgSubtitleLabel: 'সংগঠনের স্লোগান / সাবটাইটেল',
     orgSubtitlePlaceholder: 'মানবতার সেবায় রক্তদান',
     sloganLabel: 'স্লোগান লাইন',
@@ -187,7 +187,7 @@ export const translations = {
 
     // Donor Fields
     donorName: 'রক্তদাতার নাম',
-    donorNamePlaceholder: 'উদা: মোঃ জামাল উদ্দিন',
+    donorNamePlaceholder: 'রক্তদাতার পুরো নাম লিখুন',
     bloodGroup: 'রক্তের গ্রুপ',
     donationCount: 'রক্তদানের সংখ্যা / কততম বার',
     donationCountPlaceholder: 'উদা: ১ম বার, ৫ম বার...',

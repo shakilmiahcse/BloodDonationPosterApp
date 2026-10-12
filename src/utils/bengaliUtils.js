@@ -48,7 +48,7 @@ export function generateSocialCaption(donorData, lang = 'bn') {
     quote
   } = donorData || {};
 
-  const cleanOrgName = (orgName && orgName.trim()) || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ';
+  const cleanOrgName = (orgName && orgName.trim()) || (lang === 'en' ? 'Voluntary Blood Donors Wing' : 'স্বেচ্ছাসেবী রক্তদান সংস্থা');
   const cleanRef = (referenceName && referenceName.trim()) || '';
   const dateFormatted = formatBengaliDate(donationDate, 'full');
 

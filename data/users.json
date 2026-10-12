@@ -4,33 +4,16 @@
         "username": "admin",
         "password": "$2y$10$ztiL0XptCpwKWxVxZCbBTuhqnrfUTIy9eUHvhN7ICOhXLxZAylhHi",
         "name": "Admin",
-        "token": "token_usr_admin_001_eb829a007c1dac1f",
-        "orgSettings": {
-            "orgName": "চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ",
-            "orgSubtitle": "",
-            "slogan": "মানবতার সেবায় রক্তদান",
-            "heroQuote": "রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে",
-            "quote": "রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার",
-            "templateId": "bancharampur-classic",
-            "orgLogo": "\/default_org_logo.png"
-        },
-        "createdAt": "2026-10-12 13:10:00"
-    },
-    {
-        "id": "usr_1791781543_5453",
-        "username": "tariqul",
-        "password": "pass1234",
-        "name": "Tariqul Islam",
         "token": "",
         "orgSettings": {
-            "orgName": "চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ",
+            "orgName": "",
             "orgSubtitle": "",
-            "slogan": "মানবতার সেবায় রক্তদান",
-            "heroQuote": "রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে",
-            "quote": "রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার",
+            "slogan": "",
+            "heroQuote": "",
+            "quote": "",
             "templateId": "bancharampur-classic",
-            "orgLogo": "\/default_org_logo.png"
+            "orgLogo": ""
         },
-        "createdAt": "2026-10-12 07:05:43"
+        "createdAt": "2026-10-12 14:00:00"
     }
 ]

@@ -143,9 +143,9 @@ switch ($action) {
         $orgSettings = [
             "orgName" => trim($input['orgName'] ?? ''),
             "orgSubtitle" => trim($input['orgSubtitle'] ?? ''),
-            "slogan" => trim($input['slogan'] ?? 'রক্ত দেওয়ার জন্যেই আমরা'),
-            "heroQuote" => trim($input['heroQuote'] ?? 'রক্তের প্রয়োজনে মুমূর্ষ রোগীর পাশে'),
-            "quote" => trim($input['quote'] ?? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার'),
+            "slogan" => trim($input['slogan'] ?? ''),
+            "heroQuote" => trim($input['heroQuote'] ?? ''),
+            "quote" => trim($input['quote'] ?? ''),
             "templateId" => trim($input['templateId'] ?? 'bancharampur-classic'),
             "orgLogo" => $input['orgLogo'] ?? ''
         ];
@@ -344,7 +344,7 @@ switch ($action) {
             "slogan" => $input['slogan'] ?? ($user['orgSettings']['slogan'] ?? ''),
             "heroQuote" => $input['heroQuote'] ?? ($user['orgSettings']['heroQuote'] ?? ''),
             "quote" => $input['quote'] ?? ($user['orgSettings']['quote'] ?? ''),
-            "orgLogo" => $input['orgLogo'] ?? ($user['orgSettings']['orgLogo'] ?? '/default_org_logo.png'),
+            "orgLogo" => $input['orgLogo'] ?? ($user['orgSettings']['orgLogo'] ?? ''),
             "donorPhoto" => $input['donorPhoto'] ?? '',
             "createdAt" => date('Y-m-d H:i:s')
         ];
@@ -372,12 +372,12 @@ switch ($action) {
         foreach ($users as $idx => $u) {
             if ($u['id'] === $user['id']) {
                 $users[$idx]['orgSettings']['templateId'] = $newRecord['templateId'];
-                if (!empty($newRecord['orgName'])) $users[$idx]['orgSettings']['orgName'] = $newRecord['orgName'];
-                if (!empty($newRecord['orgSubtitle'])) $users[$idx]['orgSettings']['orgSubtitle'] = $newRecord['orgSubtitle'];
-                if (!empty($newRecord['orgLogo'])) $users[$idx]['orgSettings']['orgLogo'] = $newRecord['orgLogo'];
-                if (!empty($newRecord['slogan'])) $users[$idx]['orgSettings']['slogan'] = $newRecord['slogan'];
-                if (!empty($newRecord['heroQuote'])) $users[$idx]['orgSettings']['heroQuote'] = $newRecord['heroQuote'];
-                if (!empty($newRecord['quote'])) $users[$idx]['orgSettings']['quote'] = $newRecord['quote'];
+                $users[$idx]['orgSettings']['orgName'] = $newRecord['orgName'];
+                $users[$idx]['orgSettings']['orgSubtitle'] = $newRecord['orgSubtitle'];
+                $users[$idx]['orgSettings']['orgLogo'] = $newRecord['orgLogo'];
+                $users[$idx]['orgSettings']['slogan'] = $newRecord['slogan'];
+                $users[$idx]['orgSettings']['heroQuote'] = $newRecord['heroQuote'];
+                $users[$idx]['orgSettings']['quote'] = $newRecord['quote'];
                 saveUsers($users);
                 break;
             }

@@ -177,9 +177,6 @@ import UserMenuModal from './components/UserMenuModal.vue';
 import RecordsDrawer from './components/RecordsDrawer.vue';
 import { api } from './utils/api';
 import { t, currentLang, toggleLanguage } from './utils/i18n';
-import defaultOrgLogo from './assets/default_org_logo.png';
-import defaultDonorPhoto from './assets/sample_donor.jfif';
-
 const activeMobileTab = ref('preview');
 const showAuthModal = ref(false);
 const showUserMenu = ref(false);
@@ -191,21 +188,22 @@ const authState = reactive({
   user: null
 });
 
+// Clean initial form state for production (No default dummy name, photo, or logo)
 const formData = reactive({
   id: '',
   templateId: 'bancharampur-classic',
-  orgName: 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ',
+  orgName: '',
   orgSubtitle: '',
-  orgLogo: defaultOrgLogo,
-  slogan: 'মানবতার সেবায় রক্তদান',
-  heroQuote: 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে',
-  quote: 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার',
-  donorName: 'মোঃ জামাল উদ্দিন',
+  orgLogo: '',
+  slogan: '',
+  heroQuote: '',
+  quote: '',
+  donorName: '',
   bloodGroup: 'O+',
   donationCount: '১ম বার',
-  donationDate: '2026-10-07',
-  referenceName: '', // Empty by default
-  donorPhoto: defaultDonorPhoto,
+  donationDate: new Date().toISOString().split('T')[0],
+  referenceName: '',
+  donorPhoto: '',
   photoZoom: 1,
   photoPanX: 0,
   photoPanY: 0,
@@ -254,9 +252,17 @@ onMounted(async () => {
   authState.authenticated = auth.authenticated;
   authState.user = auth.user;
 
-  // Restore user's saved organization settings and logo
+  // Restore user's saved organization settings ONLY IF logged in
   if (auth.authenticated && auth.user?.orgSettings) {
     applyUserOrgSettings(auth.user.orgSettings);
+  } else {
+    // Guest mode: ensure no information is saved or pre-filled
+    formData.orgName = '';
+    formData.orgSubtitle = '';
+    formData.orgLogo = '';
+    formData.slogan = '';
+    formData.heroQuote = '';
+    formData.quote = '';
   }
 });
 
@@ -285,6 +291,17 @@ function performLogout() {
   api.logout();
   authState.authenticated = false;
   authState.user = null;
+  // Clear all data on logout so nothing remains stored in guest view
+  formData.id = '';
+  formData.orgName = '';
+  formData.orgSubtitle = '';
+  formData.orgLogo = '';
+  formData.slogan = '';
+  formData.heroQuote = '';
+  formData.quote = '';
+  formData.donorName = '';
+  formData.donorPhoto = '';
+  formData.referenceName = '';
   showToast(t('toastLoggedOut'));
 }
 
@@ -312,6 +329,9 @@ async function saveOrgDefaults() {
     quote: formData.quote
   };
   await api.saveSettings(settings);
+  if (authState.user) {
+    authState.user.orgSettings = { ...settings };
+  }
   showToast(currentLang.value === 'bn' ? 'সংগঠন ও লোগোর তথ্য সেভ হয়েছে!' : 'Organization branding & defaults saved!');
 }
 
@@ -319,6 +339,17 @@ async function saveDonorRecord() {
   const res = await api.saveRecord(formData);
   if (res.success) {
     formData.id = res.record.id;
+    // Persist latest org defaults in logged in user state
+    if (authState.user) {
+      if (!authState.user.orgSettings) authState.user.orgSettings = {};
+      authState.user.orgSettings.templateId = formData.templateId;
+      authState.user.orgSettings.orgName = formData.orgName;
+      authState.user.orgSettings.orgSubtitle = formData.orgSubtitle;
+      authState.user.orgSettings.orgLogo = formData.orgLogo;
+      authState.user.orgSettings.slogan = formData.slogan;
+      authState.user.orgSettings.heroQuote = formData.heroQuote;
+      authState.user.orgSettings.quote = formData.quote;
+    }
     showToast(t('toastSaved'));
   } else {
     showToast(res.message || 'Failed to save record.');

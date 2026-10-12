@@ -9,10 +9,11 @@
     <!-- Top Decorative Crimson & Gold Header -->
     <header class="card-top-branding">
       <div class="org-logo-wrap">
-        <img :src="logoSrc" alt="Logo" class="org-logo-img" />
+        <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="org-logo-img" />
+        <span v-else class="org-logo-placeholder">🩸</span>
       </div>
       <div class="org-title-group">
-        <h1 class="org-primary-name">{{ data.orgName || 'চরশিবপুর উত্তরপাড়া মানবসেবা যুব সংঘ' }}</h1>
+        <h1 class="org-primary-name">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</h1>
         <p v-if="data.orgSubtitle" class="org-subtitle-text">{{ data.orgSubtitle }}</p>
         <div class="org-slogan-pill">
           <span>❤️ {{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Standing beside patients in need of blood') }}</span>
@@ -34,6 +35,7 @@
         <!-- Donor Photo Frame -->
         <div class="photo-display-frame">
           <img 
+            v-if="donorPhotoSrc"
             :src="donorPhotoSrc" 
             alt="Donor" 
             class="donor-photo-img"
@@ -41,6 +43,12 @@
               transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
             }"
           />
+          <div v-else class="donor-photo-placeholder">
+            <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+            </svg>
+            <span class="placeholder-prompt">{{ isBn ? 'ছবি যুক্ত করুন' : 'Add Photo' }}</span>
+          </div>
         </div>
 
         <!-- Overlaid Status Badges (Safe within stage) -->
@@ -96,8 +104,6 @@
 import { computed } from 'vue';
 import { currentLang } from '../../utils/i18n';
 import { formatBengaliDate } from '../../utils/bengaliUtils';
-import defaultOrgLogo from '../../assets/default_org_logo.png';
-import defaultDonorPhoto from '../../assets/sample_donor.jpg';
 
 const props = defineProps({
   data: {
@@ -109,17 +115,11 @@ const props = defineProps({
 const isBn = computed(() => currentLang.value === 'bn');
 
 const logoSrc = computed(() => {
-  if (!props.data.orgLogo || props.data.orgLogo === '/default_org_logo.png' || props.data.orgLogo === './default_org_logo.png') {
-    return defaultOrgLogo;
-  }
-  return props.data.orgLogo;
+  return props.data.orgLogo || '';
 });
 
 const donorPhotoSrc = computed(() => {
-  if (!props.data.donorPhoto || props.data.donorPhoto === '/sample_donor.jfif' || props.data.donorPhoto === './sample_donor.jfif' || props.data.donorPhoto === '/sample_donor.jpg') {
-    return defaultDonorPhoto;
-  }
-  return props.data.donorPhoto;
+  return props.data.donorPhoto || '';
 });
 
 const hasReference = computed(() => {
@@ -268,6 +268,41 @@ const formattedDate = computed(() => {
   box-shadow: 0 12px 28px rgba(185, 28, 28, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
   background: #f8fafc;
   position: relative;
+}
+
+.donor-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  gap: 0.6rem;
+}
+
+.placeholder-avatar-svg {
+  width: 80px;
+  height: 80px;
+  color: #cbd5e1;
+}
+
+.placeholder-prompt {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #dc2626;
+  background: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1.5px dashed #fca5a5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.org-logo-placeholder {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .donor-photo-img {

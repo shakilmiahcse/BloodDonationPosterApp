@@ -208,7 +208,8 @@
       <label class="form-label">{{ t('orgLogoLabel') }}</label>
       <div class="org-logo-control-row">
         <div class="org-logo-preview-box">
-          <img :src="formData.orgLogo || defaultOrgLogo" alt="Org Logo" class="org-logo-thumb" />
+          <img v-if="formData.orgLogo" :src="formData.orgLogo" alt="Org Logo" class="org-logo-thumb" />
+          <span v-else class="org-logo-empty-icon">🩸</span>
         </div>
         <div class="org-logo-btns">
           <input 
@@ -222,12 +223,12 @@
             📤 {{ t('uploadLogoPrompt') }}
           </button>
           <button 
-            v-if="formData.orgLogo && formData.orgLogo !== defaultOrgLogo" 
+            v-if="formData.orgLogo" 
             type="button" 
             class="btn btn-secondary btn-sm" 
             @click="resetLogoToDefault"
           >
-            🔄 {{ t('resetLogoPrompt') }}
+            ❌ {{ t('resetLogoPrompt') }}
           </button>
         </div>
       </div>
@@ -298,7 +299,6 @@
 import { ref, computed } from 'vue';
 import { t, currentLang, quotePresets, countPresets } from '../utils/i18n';
 import { compressImageFile } from '../utils/imageUtils';
-import defaultOrgLogo from '../assets/default_org_logo.png';
 
 const props = defineProps({
   formData: {
@@ -406,8 +406,8 @@ async function handleLogoUpload(e) {
 }
 
 function resetLogoToDefault() {
-  props.formData.orgLogo = defaultOrgLogo;
-  emit('notify', currentLang.value === 'bn' ? 'ডিফল্ট লোগো রিসেট হয়েছে!' : 'Reset to default logo!');
+  props.formData.orgLogo = '';
+  emit('notify', currentLang.value === 'bn' ? 'লোগো মুছে ফেলা হয়েছে!' : 'Logo removed!');
   if (props.authState.authenticated) {
     emit('save-org-defaults');
   }
