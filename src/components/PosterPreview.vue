@@ -157,16 +157,15 @@ async function downloadImage(format = 'png') {
     const width = Math.round(rect.width);
     const height = Math.round(rect.height);
 
-    const scale = 2.5; // High definition output
+    const scale = 2; // Sharp 2x HD output (much faster export)
     const options = {
-      quality: 0.98,
+      quality: 0.95,
       pixelRatio: scale,
       width: width,
       height: height,
       canvasWidth: width * scale,
       canvasHeight: height * scale,
-      cacheBust: true,
-      skipFonts: false,
+      cacheBust: false,
       style: {
         margin: '0',
         marginLeft: '0',
