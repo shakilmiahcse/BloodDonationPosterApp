@@ -132,34 +132,36 @@ const formattedDate = computed(() => {
 .cert-poster {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4.15;
-  background: #fdfbf7;
+  aspect-ratio: 10 / 14.1;
+  background: #7f1d1d;
   color: #1e293b;
-  padding: 1rem;
+  padding: 8px;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', serif;
   overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
 .cert-inner-border {
   height: 100%;
-  border: 4px double #b91c1c;
-  outline: 1px solid #d97706;
+  border: 4px double #d97706;
+  outline: 2px solid #b91c1c;
   outline-offset: -8px;
-  padding: 1.1rem 1.3rem;
+  padding: 1.2rem 1.4rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  background: radial-gradient(circle at center, #ffffff 60%, #fef3c7 100%);
+  background: radial-gradient(ellipse at center, #ffffff 40%, #fefcf3 75%, #fef3c7 100%);
 }
 
 .corner {
   position: absolute;
-  font-size: 1.1rem;
-  color: #b91c1c;
+  font-size: 1.3rem;
+  color: #b45309;
   line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .corner-tl { top: 12px; left: 12px; }
 .corner-tr { top: 12px; right: 12px; }
@@ -168,60 +170,69 @@ const formattedDate = computed(() => {
 
 .cert-header {
   text-align: center;
-  padding-bottom: 0.3rem;
+  padding-bottom: 0.2rem;
 }
 
 .cert-logo-row {
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
+  display: flex;
+  justify-content: center;
 }
 
 .cert-org-logo {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   border-radius: 50%;
-  border: 2px solid #b91c1c;
+  border: 2px solid #d97706;
   background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .cert-logo-placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: #fee2e2;
   border: 2px solid #b91c1c;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 .cert-badge {
   display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #991b1b;
-  letter-spacing: 0.5px;
-  background: rgba(185, 28, 28, 0.08);
-  padding: 0.15rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.8px;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #92400e 100%);
+  padding: 0.22rem 1rem;
   border-radius: 999px;
-  border: 1px solid rgba(185, 28, 28, 0.2);
-  margin-bottom: 0.2rem;
+  border: 1px solid #fef08a;
+  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.3);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
 }
 
 .cert-org-name {
   font-family: 'Tiro Bangla', 'Outfit', serif;
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 900;
   color: #7f1d1d;
-  line-height: 1.2;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .cert-motto {
   font-size: 0.85rem;
   font-style: italic;
+  font-weight: 600;
   color: #475569;
-  margin-top: 0.15rem;
+  margin-top: 0.2rem;
 }
 
 .cert-body {
@@ -231,21 +242,22 @@ const formattedDate = computed(() => {
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin: 0.3rem 0;
+  margin: 0.2rem 0;
 }
 
 .cert-intro {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: #64748b;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .cert-center-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 0.6rem;
+  gap: 1.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .cert-photo-wrapper {
@@ -256,13 +268,15 @@ const formattedDate = computed(() => {
 }
 
 .cert-photo-frame {
-  width: 145px;
-  height: 170px;
-  border: 4px solid #b91c1c;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-  border-radius: 8px;
+  width: 155px;
+  height: 180px;
+  border: 4.5px solid #d97706;
+  outline: 2px solid #7f1d1d;
+  outline-offset: -2px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  border-radius: 6px;
   overflow: hidden;
-  background: #e2e8f0;
+  background: #f1f5f9;
 }
 
 .cert-photo {

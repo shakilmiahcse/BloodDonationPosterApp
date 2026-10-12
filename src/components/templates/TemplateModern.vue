@@ -1,34 +1,40 @@
 <template>
-  <div class="tribute-card-root">
-    <!-- Top Organization Header with Circular Logo -->
-    <header class="tribute-header">
-      <div class="logo-box">
-        <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="logo-img" />
-        <span v-else class="logo-placeholder">🩸</span>
-      </div>
-      <div class="header-text-block">
-        <h1 class="tribute-org-title">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</h1>
-        <p class="tribute-congrats-line">
-          🩸 {{ isBn ? 'রক্তদানের জন্য আন্তরিক রক্তিম শুভেচ্ছা ও মোবারকবাদ' : 'Warm Crimson Congratulations for Blood Donation' }}
-        </p>
+  <div class="tm-root" ref="posterEl">
+    <!-- Curved Top Header (Photoshop Ribbon Style) -->
+    <header class="tm-header">
+      <div class="tm-header-content">
+        <div class="tm-logo-wrap">
+          <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="tm-logo-img" />
+          <div v-else class="tm-logo-emblem">
+            <span>🩸</span>
+          </div>
+        </div>
+        <div class="tm-header-text">
+          <h1 class="tm-org-title">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</h1>
+          <div v-if="data.orgSubtitle" class="tm-org-subtitle">{{ data.orgSubtitle }}</div>
+          <div class="tm-header-pill">
+            <span class="tm-pill-icon">❤️</span>
+            <span class="tm-pill-text">{{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Beside critical patients in need of blood') }}</span>
+          </div>
+        </div>
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="tribute-body">
-      <!-- Framed Photo with Laurel Ribbon -->
-      <div class="tribute-photo-wrapper">
-        <div class="laurel-frame">
+    <!-- Center Stage with Studio Photo & Overlapping Badges -->
+    <main class="tm-main">
+      <div class="tm-photo-hero-stage">
+        <!-- Main Portrait Photo Frame -->
+        <div class="tm-photo-frame">
           <img 
             v-if="donorPhotoSrc"
             :src="donorPhotoSrc" 
             alt="Donor" 
-            class="donor-img"
+            class="tm-donor-photo"
             :style="{
               transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
             }"
           />
-          <div v-else class="donor-photo-placeholder">
+          <div v-else class="tm-photo-placeholder">
             <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
               <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
             </svg>
@@ -36,49 +42,53 @@
           </div>
         </div>
 
-        <!-- Overlapping Blood Group Shield (safely positioned) -->
-        <div class="tribute-bg-shield">
-          <span class="shield-grp">{{ data.bloodGroup || 'O+' }}</span>
-          <span class="shield-lbl">{{ isBn ? 'রক্তের গ্রুপ' : 'BLOOD' }}</span>
+        <!-- 1. Top-Right Overlapping Blood Group Circle -->
+        <div class="tm-blood-circle">
+          <div class="tm-bg-val">{{ data.bloodGroup || 'O+' }}</div>
+          <div class="tm-bg-tag">{{ isBn ? 'GROUP' : 'GROUP' }}</div>
         </div>
 
-        <!-- Count Ribbon -->
-        <div class="tribute-count-ribbon">
-          <span>🏅 {{ data.donationCount || (isBn ? '১ম বার রক্তদান সম্পন্ন' : '1st Blood Donation') }}</span>
+        <!-- 2. Bottom-Left Overlapping Date Pill -->
+        <div class="tm-date-pill">
+          <span class="tm-cal-icon">📅</span>
+          <span class="tm-date-text">{{ formattedDate }}</span>
+        </div>
+
+        <!-- 3. Bottom-Right Overlapping Count Pill -->
+        <div class="tm-count-pill">
+          <span class="tm-star-icon">★</span>
+          <span class="tm-count-text">{{ data.donationCount || (isBn ? '১ম বার' : '1st Time') }}</span>
         </div>
       </div>
 
-      <!-- Donor Name and Details -->
-      <div class="tribute-details-card">
-        <div class="salute-ribbon-tag">
-          ★ {{ isBn ? '— মানবতার কল্যাণে গর্বিত রক্তযোদ্ধা —' : '— PROUD VOLUNTARY BLOOD DONOR —' }} ★
+      <!-- Sculpted Donor Name Plaque -->
+      <div class="tm-donor-plaque">
+        <div class="tm-honor-ribbon">
+          <span class="ribbon-star">★</span>
+          <span class="ribbon-text">{{ isBn ? 'HONORABLE BLOOD DONOR' : 'HONORABLE BLOOD DONOR' }}</span>
+          <span class="ribbon-star">★</span>
         </div>
 
-        <h2 class="tribute-donor-name">
+        <h2 class="tm-donor-name">
           {{ data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name') }}
         </h2>
 
-        <p class="tribute-quote">
+        <p class="tm-donor-quote">
           “{{ data.quote || (isBn ? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' : 'Blood donation is the greatest gift of life') }}”
         </p>
 
-        <div class="tribute-meta-row">
-          <div class="meta-pill date-pill">
-            <span>📅 {{ formattedDate }}</span>
-          </div>
-
-          <!-- Strictly rendered ONLY if referenceName has content -->
-          <div v-if="hasReference" class="meta-pill ref-pill">
-            <span>🤝 {{ isBn ? 'সংগ্রাহক / রেফারেন্স:' : 'Referred By:' }} {{ data.referenceName }}</span>
-          </div>
+        <!-- Optional Collector/Reference -->
+        <div v-if="hasReference" class="tm-ref-box">
+          <span class="ref-label">🤝 {{ isBn ? 'সংগ্রাহক:' : 'Ref:' }}</span>
+          <span class="ref-val">{{ data.referenceName }}</span>
         </div>
       </div>
     </main>
 
-    <!-- Footer Banner -->
-    <footer class="tribute-footer">
-      <div class="footer-msg">
-        <span>❤️ {{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Standing beside patients in need of blood') }}</span>
+    <!-- Solid Bottom Charcoal/Navy Footer -->
+    <footer class="tm-footer">
+      <div class="tm-footer-text">
+        {{ data.slogan || (isBn ? 'মানবতার সেবায় রক্তদান' : 'Voluntary Blood Donation • Save Lives') }}
       </div>
     </footer>
   </div>
@@ -111,168 +121,204 @@ const hasReference = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  if (!props.data.donationDate) return '07-10-2026';
-  if (isBn.value) {
-    return formatBengaliDate(props.data.donationDate, 'bengali-digits');
-  }
+  if (!props.data.donationDate) return '2026-10-07';
   return props.data.donationDate;
 });
 </script>
 
 <style scoped>
-.tribute-card-root {
+.tm-root {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5.2;
-  background: linear-gradient(165deg, #ffffff 0%, #fffbf5 35%, #fff1f2 75%, #fef2f2 100%);
+  aspect-ratio: 10 / 14.2;
+  background: radial-gradient(ellipse at 50% 25%, #ffffff 0%, #faf8f5 55%, #f4eae6 100%);
   color: #0f172a;
+  box-sizing: border-box;
+  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.1rem 1.3rem;
-  box-sizing: border-box;
-  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
-  border: 3.5px solid #d97706;
-  outline: 2px solid #dc2626;
-  outline-offset: -7px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  border: 4px solid #b00c14;
 }
 
-/* Header */
-.tribute-header {
+/* TOP CURVED HEADER (Illustrator style) */
+.tm-header {
+  position: relative;
+  background: linear-gradient(135deg, #7c0b11 0%, #a80b13 50%, #c4121b 100%);
+  padding: 1.1rem 1.3rem 1.4rem 1.3rem;
+  box-sizing: border-box;
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
+  box-shadow: 0 8px 24px rgba(168, 11, 19, 0.35);
+  z-index: 5;
+}
+
+.tm-header-content {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1.5px solid #fecaca;
-  border-top: 3px solid #dc2626;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
-  padding: 0.8rem 1.1rem;
 }
 
-.logo-box {
-  width: 58px;
-  height: 58px;
+.tm-logo-wrap {
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
   background: #ffffff;
-  padding: 2.5px;
-  border: 2px solid #fbbf24;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  padding: 3px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28), 0 0 0 2px rgba(254, 240, 138, 0.85);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo-img {
+.tm-logo-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: 50%;
 }
 
-.header-text-block {
-  flex: 1;
-}
-
-.tribute-org-title {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: #0f172a;
-  line-height: 1.2;
-  letter-spacing: -0.2px;
-}
-
-.tribute-congrats-line {
-  font-size: 0.78rem;
-  color: #dc2626;
-  font-weight: 700;
-  margin-top: 0.2rem;
-}
-
-/* Body */
-.tribute-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0.6rem 0;
-}
-
-.tribute-photo-wrapper {
-  position: relative;
-  width: 250px;
-  height: 265px;
-  margin-bottom: 0.75rem;
-  display: flex;
-  justify-content: center;
-}
-
-.laurel-frame {
-  width: 215px;
-  height: 240px;
-  border-radius: 22px;
-  overflow: hidden;
-  border: 3.5px solid #d97706;
-  outline: 3px solid #dc2626;
-  outline-offset: 3px;
-  box-shadow: 0 10px 25px rgba(217, 119, 6, 0.18), 0 4px 10px rgba(0, 0, 0, 0.06);
-  background: #f8fafc;
-}
-
-.donor-photo-placeholder {
+.tm-logo-emblem {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+  background: #fee2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.tm-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tm-org-title {
+  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.15;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  word-break: break-word;
+}
+
+.tm-org-subtitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin-top: 0.15rem;
+}
+
+.tm-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(254, 240, 138, 0.65);
+  padding: 0.22rem 0.8rem;
+  border-radius: 999px;
+  margin-top: 0.4rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tm-pill-icon {
+  font-size: 0.75rem;
+}
+
+.tm-pill-text {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* MAIN BODY */
+.tm-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
-  gap: 0.6rem;
+  padding: 0.8rem 1.4rem;
+  position: relative;
+  z-index: 2;
 }
 
-.placeholder-avatar-svg {
-  width: 78px;
-  height: 78px;
-  color: #cbd5e1;
-}
-
-.placeholder-prompt {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: #d97706;
-  background: #fff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  border: 1.5px dashed #fed7aa;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.logo-placeholder {
-  font-size: 1.7rem;
+/* HERO PHOTO STAGE */
+.tm-photo-hero-stage {
+  position: relative;
+  width: 255px;
+  height: 285px;
+  margin-bottom: 0.9rem;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-.donor-img {
+.tm-photo-frame {
+  width: 235px;
+  height: 270px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 4px solid #b00c14;
+  outline: 2px solid #ffffff;
+  outline-offset: -2px;
+  box-shadow: 0 16px 36px rgba(176, 12, 20, 0.28), 0 4px 14px rgba(0, 0, 0, 0.12);
+  background: #f8fafc;
+}
+
+.tm-donor-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.1s ease-out;
 }
 
-/* Shield Badge (safely inside) */
-.tribute-bg-shield {
+.tm-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #94a3b8;
+  gap: 0.6rem;
+}
+
+.placeholder-avatar-svg {
+  width: 76px;
+  height: 76px;
+  opacity: 0.6;
+}
+
+.placeholder-prompt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #b00c14;
+  background: #ffffff;
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  border: 1px dashed #fca5a5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* 1. TOP RIGHT BLOOD GROUP CIRCLE */
+.tm-blood-circle {
   position: absolute;
-  top: -8px;
-  right: 8px;
-  width: 74px;
-  height: 74px;
+  top: -16px;
+  right: -8px;
+  width: 82px;
+  height: 82px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 50%, #991b1b 100%);
-  color: #ffffff;
-  border: 3px solid #fef08a;
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.45);
+  background: radial-gradient(circle at 35% 35%, #e11d48 0%, #be123c 45%, #881337 100%);
+  border: 3.5px solid #ffffff;
+  box-shadow: 0 8px 22px rgba(190, 18, 60, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -280,115 +326,166 @@ const formattedDate = computed(() => {
   z-index: 10;
 }
 
-.shield-grp {
-  font-size: 1.75rem;
+.tm-bg-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.1rem;
   font-weight: 900;
+  color: #ffffff;
   line-height: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.shield-lbl {
-  font-size: 0.56rem;
-  font-weight: 800;
+.tm-bg-tag {
+  font-size: 0.54rem;
+  font-weight: 900;
   letter-spacing: 0.8px;
   color: #fef08a;
   text-transform: uppercase;
 }
 
-.tribute-count-ribbon {
+/* 2. BOTTOM LEFT DATE PILL */
+.tm-date-pill {
   position: absolute;
-  bottom: 8px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  bottom: 0px;
+  left: -2px;
+  background: #0f172a;
   color: #ffffff;
-  padding: 0.28rem 0.85rem;
+  border: 2px solid #ffffff;
   border-radius: 999px;
-  font-size: 0.76rem;
-  font-weight: 900;
-  border: 1.5px solid #fef3c7;
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+  padding: 0.35rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
   z-index: 10;
 }
 
-/* Details */
-.tribute-details-card {
-  width: 100%;
-  background: #ffffff;
-  border: 1.5px solid #fed7aa;
-  border-top: 3px solid #d97706;
-  border-radius: 18px;
-  padding: 0.85rem 1.2rem;
-  text-align: center;
-  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.1), 0 2px 6px rgba(0, 0, 0, 0.04);
+.tm-cal-icon {
+  font-size: 0.85rem;
 }
 
-.salute-ribbon-tag {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #d97706;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.25rem;
-}
-
-.tribute-donor-name {
-  font-size: 1.95rem;
-  font-weight: 900;
-  color: #991b1b;
-  line-height: 1.2;
-  margin: 0.15rem 0 0.35rem 0;
-}
-
-.tribute-quote {
+.tm-date-text {
+  font-family: 'Outfit', 'Hind Siliguri', sans-serif;
   font-size: 0.88rem;
-  color: #334155;
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.35;
-  margin-bottom: 0.45rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.3px;
 }
 
-.tribute-meta-row {
+/* 3. BOTTOM RIGHT COUNT PILL */
+.tm-count-pill {
+  position: absolute;
+  bottom: 0px;
+  right: -2px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  gap: 0.35rem;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+  z-index: 10;
 }
 
-.meta-pill {
-  padding: 0.25rem 0.75rem;
+.tm-star-icon {
+  font-size: 0.85rem;
+  color: #ffffff;
+}
+
+.tm-count-text {
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* DONOR PLAQUE CARD */
+.tm-donor-plaque {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1.5px solid #fecaca;
+  border-top: 3.5px solid #b00c14;
+  border-radius: 16px;
+  padding: 0.8rem 1.2rem;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(176, 12, 20, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tm-honor-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #b00c14;
+  text-transform: uppercase;
+}
+
+.ribbon-star {
+  color: #f59e0b;
+}
+
+.tm-donor-name {
+  font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0.2rem 0 0.15rem 0;
+  letter-spacing: -0.2px;
+}
+
+.tm-donor-quote {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #475569;
+  line-height: 1.35;
+  margin: 0.15rem 0 0.3rem 0;
+}
+
+.tm-ref-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  padding: 0.2rem 0.75rem;
   border-radius: 999px;
   font-size: 0.75rem;
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+
+.ref-label {
   font-weight: 700;
+  color: #b00c14;
 }
 
-.date-pill {
-  background: #fff1f2;
-  border: 1.5px solid #fecaca;
-  color: #991b1b;
-  font-weight: 800;
+.ref-val {
+  font-weight: 600;
+  color: #1e293b;
 }
 
-.ref-pill {
-  background: #f0fdf4;
-  border: 1.5px solid #10b981;
-  color: #065f46;
-  font-weight: 800;
-}
-
-/* Footer */
-.tribute-footer {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 60%, #991b1b 100%);
-  border-top: 2px solid #d97706;
-  padding: 0.6rem 1rem;
-  border-radius: 12px;
+/* SOLID DARK FOOTER BAR */
+.tm-footer {
+  background: #0f172a;
+  padding: 0.65rem 1rem;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.15);
+  border-top: 2px solid #b00c14;
+  z-index: 5;
 }
 
-.footer-msg {
-  font-size: 0.84rem;
+.tm-footer-text {
+  font-size: 0.88rem;
   font-weight: 800;
   color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.4px;
 }
 </style>
