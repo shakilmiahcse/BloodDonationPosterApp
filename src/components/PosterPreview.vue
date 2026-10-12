@@ -163,8 +163,11 @@ async function downloadImage(format = 'png') {
       pixelRatio: scale,
       width: width,
       height: height,
-      canvasWidth: width * scale,
-      canvasHeight: height * scale,
+      // html-to-image applies pixelRatio when sizing the output canvas. Keep
+      // canvasWidth/Height in CSS pixels so the scaled canvas stays aligned
+      // with the cloned poster instead of exposing a dark trailing strip.
+      canvasWidth: width,
+      canvasHeight: height,
       cacheBust: false,
       style: {
         margin: '0',
@@ -234,6 +237,8 @@ async function shareNative() {
       pixelRatio: 2,
       width: width,
       height: height,
+      canvasWidth: width,
+      canvasHeight: height,
       quality: 0.95,
       style: {
         margin: '0',
