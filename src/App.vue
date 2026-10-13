@@ -6,54 +6,56 @@
         <div class="brand-icon-box">🩸</div>
         <div class="brand-text">
           <h1>{{ t('appTitle') }}</h1>
-          <p>{{ t('appSubtitle') }}</p>
+          <p class="brand-subtitle hide-on-mobile">{{ t('appSubtitle') }}</p>
         </div>
       </div>
 
       <div class="header-actions">
-        <!-- Theme Switcher Button (Default: Light Mode) -->
+        <!-- Theme Switcher Button -->
         <button 
-          class="btn btn-secondary btn-sm theme-toggle-btn" 
+          class="btn btn-secondary btn-sm header-action-btn theme-toggle-btn" 
           @click="toggleTheme"
           id="btn-theme-toggle"
           :title="currentTheme === 'dark' ? (currentLang === 'bn' ? 'লাইট মোডে পরিবর্তন করুন' : 'Switch to Light Mode') : (currentLang === 'bn' ? 'ডার্ক মোডে পরিবর্তন করুন' : 'Switch to Dark Mode')"
         >
           <span class="theme-icon">{{ currentTheme === 'dark' ? '☀️' : '🌙' }}</span>
-          <span class="theme-text">{{ currentTheme === 'dark' ? (currentLang === 'bn' ? 'লাইট' : 'Light') : (currentLang === 'bn' ? 'ডার্ক' : 'Dark') }}</span>
+          <span class="theme-text hide-on-mobile">{{ currentTheme === 'dark' ? (currentLang === 'bn' ? 'লাইট' : 'Light') : (currentLang === 'bn' ? 'ডার্ক' : 'Dark') }}</span>
         </button>
 
-        <!-- Language Switcher Button (Default: English) -->
+        <!-- Language Switcher Button -->
         <button 
-          class="btn btn-secondary btn-sm lang-toggle-btn" 
+          class="btn btn-secondary btn-sm header-action-btn lang-toggle-btn" 
           @click="toggleAppLanguage"
           id="btn-language-toggle"
           :title="currentLang === 'en' ? 'বাংলা ভাষায় পরিবর্তন করুন' : 'Switch to English'"
         >
           <span class="lang-icon">🌐</span>
-          <span class="lang-text">{{ currentLang === 'en' ? 'বাংলা' : 'English' }}</span>
+          <span class="lang-text hide-on-mobile">{{ currentLang === 'en' ? 'বাংলা' : 'English' }}</span>
+          <span class="lang-text-short show-on-mobile">{{ currentLang === 'en' ? 'বাং' : 'EN' }}</span>
         </button>
 
-        <!-- Records Button -->
+        <!-- Records Button (Desktop only - mobile already has Records in bottom nav tabs) -->
         <button 
-          class="btn btn-secondary btn-sm" 
+          class="btn btn-secondary btn-sm header-action-btn desktop-only-btn" 
           @click="showRecordsModal = true"
           id="btn-open-records"
         >
           <span>📁 {{ t('recordsTab') }}</span>
         </button>
 
-        <!-- Auth Status Button (Compact, doesn't immediately log out on click) -->
+        <!-- Auth Status Button -->
         <div 
           class="badge-auth-status" 
           :class="authState.authenticated ? 'logged-in' : 'guest'"
           @click="handleAuthClick"
           id="btn-auth-toggle"
+          :title="authState.authenticated ? (authState.user?.name || authState.user?.username) : t('loginBtn')"
         >
-          <span v-if="authState.authenticated">
-            🟢 {{ authState.user?.name || authState.user?.username }}
+          <span v-if="authState.authenticated" class="auth-name-tag">
+            🟢 <span class="auth-name-text">{{ authState.user?.name || authState.user?.username }}</span>
           </span>
           <span v-else>
-            ⚪ {{ t('loginBtn') }}
+            ⚪ <span class="hide-on-mobile">{{ t('loginBtn') }}</span><span class="show-on-mobile">{{ currentLang === 'bn' ? 'লগইন' : 'Login' }}</span>
           </span>
         </div>
       </div>
@@ -97,7 +99,7 @@
           id="tab-btn-auth"
         >
           <span>{{ authState.authenticated ? '👤' : '🔐' }}</span>
-          <span>{{ authState.authenticated ? t('profileBtn') : t('loginTab') }}</span>
+          <span>{{ authState.authenticated ? (currentLang === 'bn' ? 'প্রোফাইল' : 'Profile') : (currentLang === 'bn' ? 'লগইন' : 'Login') }}</span>
         </button>
       </nav>
 

@@ -15,7 +15,13 @@
           <span v-else class="cert-logo-placeholder">🩸</span>
         </div>
         <div class="cert-badge">🏅 {{ isBn ? 'সম্মাননা ও কৃতজ্ঞতা স্মারক' : 'CERTIFICATE OF HONOR & GRATITUDE' }}</div>
-        <h1 class="cert-org-name">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}</h1>
+        <h1 
+          class="cert-org-name"
+          :style="{ fontSize: orgNameFontSize }"
+          :title="data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name')"
+        >
+          {{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'Organization Name') }}
+        </h1>
         <p v-if="data.heroQuote" class="cert-motto">“{{ data.heroQuote }}”</p>
       </header>
 
@@ -125,6 +131,13 @@ const formattedDate = computed(() => {
     return formatBengaliDate(props.data.donationDate, 'full');
   }
   return props.data.donationDate;
+});
+
+const orgNameFontSize = computed(() => {
+  const len = (props.data.orgName || '').length;
+  if (len > 35) return '1.22rem';
+  if (len > 25) return '1.4rem';
+  return '1.6rem';
 });
 </script>
 

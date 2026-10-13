@@ -1,89 +1,172 @@
 <template>
   <div class="story-poster-root" ref="posterEl">
-    <!-- Top Ivory Section -->
+    <!-- 1. Top Luminous Studio Canvas -->
     <div class="story-top-canvas">
-      <!-- Branded Header -->
-      <header class="story-header">
-        <div class="story-org-chip">
-          <div class="story-logo-circle">
+      <!-- Ambient Studio Spotlight Glow -->
+      <div class="story-spotlight-top" aria-hidden="true"></div>
+
+      <!-- Top Branded Floating Capsule -->
+      <header class="story-header-capsule">
+        <div class="story-logo-medallion">
+          <div class="story-logo-gold-ring">
             <img v-if="logoSrc" :src="logoSrc" alt="Logo" class="story-logo-img" />
-            <span v-else class="story-logo-placeholder">🩸</span>
+            <div v-else class="story-logo-fallback">
+              <span class="fallback-icon">🩸</span>
+            </div>
           </div>
-          <span class="story-org-title">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}</span>
         </div>
-        <div class="story-save-tag">#SaveLife</div>
+
+        <div class="story-org-info">
+          <div class="story-title-row">
+            <h1 
+              class="story-org-title" 
+              :style="{ fontSize: orgNameFontSize }"
+              :title="data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME')"
+            >
+              {{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}
+            </h1>
+            <span class="story-verified-badge" title="Verified Volunteer Org">✓</span>
+          </div>
+
+          <div v-if="data.orgSubtitle" class="story-org-subtitle">
+            {{ data.orgSubtitle }}
+          </div>
+        </div>
+
+        <div class="story-hashtag-pill">
+          #SaveLife
+        </div>
       </header>
 
-      <!-- Slogan Banner -->
-      <div class="story-quote-strip">
-        <span class="strip-quote">“{{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Beside critical patients in need') }}”</span>
+      <!-- Slogan Banner Ribbon -->
+      <div class="story-motto-banner">
+        <span class="motto-accent-quote">“</span>
+        <span class="motto-text">
+          {{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Standing beside patients in need') }}
+        </span>
+        <span class="motto-accent-quote">”</span>
       </div>
     </div>
 
-    <!-- Center Overlapping Photo Stage -->
+    <!-- 2. Dynamic Photoshop Wave Transition Divider -->
+    <div class="story-wave-divider" aria-hidden="true">
+      <svg viewBox="0 0 540 80" preserveAspectRatio="none" class="story-wave-svg">
+        <defs>
+          <linearGradient id="storyWaveRuby" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#b91c1c" />
+            <stop offset="50%" stop-color="#88080f" />
+            <stop offset="100%" stop-color="#550307" />
+          </linearGradient>
+          <linearGradient id="storyWaveGold" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#d97706" />
+            <stop offset="50%" stop-color="#fef08a" />
+            <stop offset="100%" stop-color="#f59e0b" />
+          </linearGradient>
+        </defs>
+        <!-- Shadow wave layer -->
+        <path d="M0,25 C140,65 340,10 540,45 L540,80 L0,80 Z" fill="rgba(0, 0, 0, 0.35)" />
+        <!-- 3D Gold Accent ridge -->
+        <path d="M0,28 C140,68 340,13 540,48 L540,52 C340,17 140,72 0,32 Z" fill="url(#storyWaveGold)" />
+        <!-- Main Ruby wave -->
+        <path d="M0,32 C140,72 340,17 540,52 L540,80 L0,80 Z" fill="url(#storyWaveRuby)" />
+      </svg>
+    </div>
+
+    <!-- 3. Center Overlapping Studio Photo Stage -->
     <div class="story-photo-stage">
+      <!-- Radial Halo Backlight behind photo -->
+      <div class="story-photo-halo" aria-hidden="true"></div>
+
+      <!-- 3D Gold & Ruby Beveled Frame -->
       <div class="story-photo-frame">
-        <img 
-          v-if="donorPhotoSrc"
-          :src="donorPhotoSrc" 
-          alt="Donor" 
-          class="story-donor-img"
-          :style="{
-            transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
-          }"
-        />
-        <div v-else class="story-photo-placeholder">
-          <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
-          </svg>
-          <span class="placeholder-prompt">{{ isBn ? 'ছবি যুক্ত করুন' : 'Add Photo' }}</span>
+        <div class="story-photo-inner">
+          <img 
+            v-if="donorPhotoSrc"
+            :src="donorPhotoSrc" 
+            alt="Donor" 
+            class="story-donor-img"
+            :style="{
+              transform: `scale(${data.photoZoom || 1}) translate(${data.photoPanX || 0}px, ${data.photoPanY || 0}px)`
+            }"
+          />
+          <div v-else class="story-photo-placeholder">
+            <svg class="placeholder-avatar-svg" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+            </svg>
+            <span class="placeholder-prompt">{{ isBn ? 'ছবি যুক্ত করুন' : 'Add Photo' }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Blood Group Badge (Top-Right) -->
+      <!-- Overlapping Badge 1: 3D Glossy Blood Group Sphere (Top-Right) -->
       <div class="story-blood-badge">
+        <div class="story-sphere-glare" aria-hidden="true"></div>
         <span class="sbg-val">{{ data.bloodGroup || 'O+' }}</span>
         <span class="sbg-tag">{{ isBn ? 'ব্লাড গ্রুপ' : 'BLOOD' }}</span>
       </div>
 
-      <!-- Count Badge (Bottom-Left) -->
-      <div class="story-count-badge">
+      <!-- Overlapping Badge 2: 3D Gold Ribbon Donation Frequency (Bottom-Left) -->
+      <div class="story-count-ribbon">
         <span class="scount-star">★</span>
-        <span class="scount-val">{{ data.donationCount || (isBn ? '১ম বার রক্তদান' : '1st Time') }}</span>
+        <span class="scount-val">{{ data.donationCount || (isBn ? '১ম বার রক্তদান' : '1st Time Donor') }}</span>
+        <span class="scount-star">★</span>
       </div>
     </div>
 
-    <!-- Bottom Deep Crimson Section -->
+    <!-- 4. Bottom Deep Royal Crimson Section with Glass Recognition Plaque -->
     <div class="story-bottom-canvas">
-      <!-- Donor Honor Section -->
+      <!-- Ambient Curved Light Watermark -->
+      <div class="story-watermark-fx" aria-hidden="true">
+        <svg viewBox="0 0 540 400" preserveAspectRatio="none" class="story-bg-svg">
+          <path d="M-50,150 Q270,300 590,100 L590,400 L-50,400 Z" fill="rgba(0, 0, 0, 0.18)" />
+          <path d="M-50,80 Q270,240 590,40" stroke="rgba(251, 191, 36, 0.08)" stroke-width="2" fill="none" />
+        </svg>
+      </div>
+
+      <!-- Sculpted Glass Donor Recognition Block -->
       <div class="story-donor-block">
+        <!-- Golden Star Kicker Ribbon -->
         <div class="story-honor-badge">
-          ★ {{ isBn ? '— গর্বিত রক্তযোদ্ধা —' : '— PROUD BLOOD DONOR —' }} ★
+          <span class="badge-star">★</span>
+          <span class="badge-text">{{ isBn ? '— গর্বিত রক্তযোদ্ধা —' : '— PROUD BLOOD HERO —' }}</span>
+          <span class="badge-star">★</span>
         </div>
 
-        <h2 class="story-donor-name">
+        <!-- Donor Full Name -->
+        <h2 class="story-donor-name" :title="data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name')">
           {{ data.donorName || (isBn ? 'রক্তদাতার নাম' : 'Donor Full Name') }}
         </h2>
 
-        <p class="story-donor-quote">
-          “{{ data.quote || (isBn ? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' : 'Blood donation is the greatest gift of life') }}”
-        </p>
+        <!-- Inspirational Quote -->
+        <div class="story-quote-box">
+          <p class="story-donor-quote">
+            “{{ data.quote || (isBn ? 'রক্তদান হোক আপনার জীবনের শ্রেষ্ঠ উপহার' : 'Blood donation is the greatest gift of life') }}”
+          </p>
+        </div>
 
-        <!-- Meta Info Pills -->
+        <!-- Meta Pills Row (Date & Collector) -->
         <div class="story-pills-row">
           <div class="spill-item">
-            <span>📅 {{ formattedDate }}</span>
+            <span class="spill-icon">📅</span>
+            <span class="spill-text">{{ formattedDate }}</span>
           </div>
 
           <div v-if="hasReference" class="spill-item ref-item">
-            <span>🤝 {{ isBn ? 'সংগ্রাহক:' : 'Ref:' }} {{ data.referenceName }}</span>
+            <span class="spill-icon">🤝</span>
+            <span class="spill-text">{{ isBn ? 'সংগ্রাহক:' : 'Ref:' }} {{ data.referenceName }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Bottom Slogan Ribbon -->
+      <!-- Bottom Slogan Ribbon Base -->
       <footer class="story-footer-bar">
-        <span>{{ data.slogan || (isBn ? 'মানবতার সেবায় রক্তদান • জীবন বাঁচান' : 'Donate Blood, Save Lives') }}</span>
+        <div class="story-footer-line" aria-hidden="true"></div>
+        <div class="story-footer-content">
+          <span class="footer-drop-icon">🩸</span>
+          <span class="footer-motto-text">
+            {{ data.slogan || (isBn ? 'মানবতার সেবায় রক্তদান • জীবন বাঁচান' : 'Donate Blood, Save Lives') }}
+          </span>
+        </div>
       </footer>
     </div>
   </div>
@@ -116,12 +199,17 @@ const hasReference = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  if (!props.data.donationDate) return '07-10-2026';
-  const parts = props.data.donationDate.split('-');
-  if (parts.length === 3) {
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
-  return props.data.donationDate;
+  if (!props.data.donationDate) return isBn.value ? '১২-১০-২০২৬' : '12-10-2026';
+  return formatBengaliDate(props.data.donationDate, isBn.value);
+});
+
+// Adaptive font sizing so long organization names fit cleanly in 1 line
+const orgNameFontSize = computed(() => {
+  const len = (props.data.orgName || '').length;
+  if (len > 45) return '0.78rem';
+  if (len > 32) return '0.88rem';
+  if (len > 22) return '1.05rem';
+  return '1.22rem';
 });
 </script>
 
@@ -129,23 +217,26 @@ const formattedDate = computed(() => {
 .story-poster-root {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 15.5;
-  background: #0f172a;
+  aspect-ratio: 9 / 16;
+  background: #3b0205;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-  border: 4px solid #b00c14;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  border: 4px solid #b91c1c;
 }
 
-/* TOP IVORY CANVAS */
+/* =========================================================
+   1. TOP LUMINOUS STUDIO CANVAS (Ivory-Pearl Lighting)
+   ========================================================= */
 .story-top-canvas {
-  height: 38%;
-  background: linear-gradient(180deg, #ffffff 0%, #fefcfb 60%, #fbf4f2 100%);
-  padding: 1.1rem 1.2rem;
+  position: relative;
+  height: 34%;
+  background: linear-gradient(175deg, #ffffff 0%, #fdf8f6 55%, #f7ebe8 100%);
+  padding: 1rem 1.15rem 0.5rem 1.15rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -153,113 +244,238 @@ const formattedDate = computed(() => {
   z-index: 2;
 }
 
-.story-header {
+.story-spotlight-top {
+  position: absolute;
+  top: -30px;
+  left: 20%;
+  width: 320px;
+  height: 180px;
+  background: radial-gradient(ellipse, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Top Branded Floating Capsule */
+.story-header-capsule {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.65rem;
   background: #ffffff;
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.85rem;
   border-radius: 999px;
   border: 1.5px solid #fecaca;
-  box-shadow: 0 4px 12px rgba(176, 12, 20, 0.08);
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.12), 0 0 0 1px rgba(254, 202, 202, 0.6);
+  z-index: 4;
 }
 
-.story-org-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.story-logo-circle {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #ffffff;
-  padding: 2px;
-  border: 2px solid #b00c14;
+.story-logo-medallion {
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.story-logo-gold-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 2px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), 0 0 0 2px #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
 .story-logo-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 50%;
 }
 
-.story-logo-placeholder {
+.story-logo-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fee2e2 0%, #fecaca 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fallback-icon {
   font-size: 1.3rem;
 }
 
+.story-org-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
 .story-org-title {
-  font-family: 'Hind Siliguri', 'Outfit', sans-serif;
-  font-size: 0.95rem;
+  font-family: 'Outfit', 'Hind Siliguri', sans-serif;
   font-weight: 900;
-  color: #0f172a;
+  color: #b90e17;
+  line-height: 1.15;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(185, 14, 23, 0.15);
+}
+
+.story-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.4);
+}
+
+.story-org-subtitle {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.story-hashtag-pill {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+/* Slogan Banner Ribbon */
+.story-motto-banner {
+  margin-top: 0.75rem;
+  background: rgba(254, 226, 226, 0.65);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+  padding: 0.4rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.05);
+}
+
+.motto-accent-quote {
+  font-family: 'Tiro Bangla', serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #b90e17;
+  line-height: 1;
+}
+
+.motto-text {
+  font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.25;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.story-save-tag {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #b00c14;
-  background: #fee2e2;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid #fca5a5;
-  white-space: nowrap;
+/* =========================================================
+   2. DYNAMIC WAVE DIVIDER (Photoshop Layered Vector)
+   ========================================================= */
+.story-wave-divider {
+  position: absolute;
+  top: calc(34% - 20px);
+  left: 0;
+  width: 100%;
+  height: 42px;
+  pointer-events: none;
+  z-index: 3;
 }
 
-.story-quote-strip {
-  margin-top: 0.8rem;
-  text-align: center;
-  background: rgba(176, 12, 20, 0.06);
-  border: 1px solid rgba(176, 12, 20, 0.15);
-  padding: 0.35rem 0.85rem;
-  border-radius: 999px;
+.story-wave-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.strip-quote {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #991b1b;
-}
-
-/* OVERLAPPING HERO PHOTO STAGE */
+/* =========================================================
+   3. CENTER OVERLAPPING STUDIO PHOTO STAGE
+   ========================================================= */
 .story-photo-stage {
   position: absolute;
-  top: 23%;
+  top: 24%;
   left: 50%;
   transform: translateX(-50%);
-  width: 250px;
-  height: 295px;
-  z-index: 10;
+  width: 260px;
+  height: 260px;
+  z-index: 5;
+}
+
+.story-photo-halo {
+  position: absolute;
+  inset: -14px;
+  border-radius: 30px;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.35) 0%, rgba(220, 38, 38, 0.25) 55%, transparent 75%);
+  filter: blur(14px);
+  pointer-events: none;
 }
 
 .story-photo-frame {
   width: 100%;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 26px;
+  padding: 4px;
+  background: linear-gradient(135deg, #fef08a 0%, #d97706 40%, #b45309 80%, #fef08a 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(185, 28, 28, 0.4);
+  box-sizing: border-box;
+}
+
+.story-photo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
   overflow: hidden;
-  border: 4.5px solid #ffffff;
-  outline: 2px solid #b00c14;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
-  background: #f1f5f9;
+  background: #111827;
+  position: relative;
 }
 
 .story-donor-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.1s ease-out;
+  object-position: center 20%;
+  display: block;
 }
 
 .story-photo-placeholder {
@@ -269,7 +485,7 @@ const formattedDate = computed(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #1f2937, #111827);
   color: #94a3b8;
   gap: 0.5rem;
 }
@@ -277,152 +493,254 @@ const formattedDate = computed(() => {
 .placeholder-avatar-svg {
   width: 72px;
   height: 72px;
-  opacity: 0.6;
+  opacity: 0.45;
 }
 
 .placeholder-prompt {
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #b00c14;
-  background: #ffffff;
-  padding: 0.2rem 0.75rem;
-  border-radius: 999px;
-  border: 1px dashed #fca5a5;
+  color: #cbd5e1;
 }
 
-/* BLOOD GROUP CIRCLE (Top-Right) */
+/* Overlapping 1: 3D Glossy Blood Group Sphere (Top-Right) */
 .story-blood-badge {
   position: absolute;
-  top: -16px;
+  top: -12px;
   right: -16px;
-  width: 82px;
-  height: 82px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #e11d48 0%, #b00c14 60%, #7f050b 100%);
-  border: 3.5px solid #ffffff;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.42);
+  background: radial-gradient(circle at 32% 28%, #ff4b55 0%, #dc2626 55%, #7f0d14 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55), 0 0 0 3px #ffffff, 0 0 0 5px #d97706;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 12;
+  z-index: 7;
+  overflow: hidden;
+}
+
+.story-sphere-glare {
+  position: absolute;
+  top: 4px;
+  left: 14px;
+  width: 34px;
+  height: 15px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 100%);
+  transform: rotate(-25deg);
+  pointer-events: none;
 }
 
 .sbg-val {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.1rem;
+  font-size: 1.95rem;
   font-weight: 900;
   color: #ffffff;
-  line-height: 1;
+  line-height: 0.95;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .sbg-tag {
   font-size: 0.52rem;
   font-weight: 800;
   color: #fef08a;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  margin-top: 1px;
 }
 
-/* COUNT BADGE (Bottom-Left) */
-.story-count-badge {
+/* Overlapping 2: 3D Gold Ribbon Donation Frequency (Bottom-Left) */
+.story-count-ribbon {
   position: absolute;
   bottom: -10px;
-  left: -12px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: #ffffff;
-  border: 3px solid #ffffff;
-  border-radius: 999px;
-  padding: 0.35rem 0.95rem;
+  left: -20px;
+  background: linear-gradient(135deg, #d97706 0%, #fbbf24 35%, #f59e0b 70%, #b45309 100%);
+  border: 1.5px solid #ffffff;
+  padding: 0.32rem 0.85rem;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  z-index: 12;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  z-index: 7;
 }
 
 .scount-star {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .scount-val {
-  font-size: 0.85rem;
-  font-weight: 800;
+  font-size: 0.86rem;
+  font-weight: 900;
+  color: #451a03;
+  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
-/* BOTTOM CRIMSON CANVAS */
+/* =========================================================
+   4. BOTTOM ROYAL CRIMSON SECTION (Glass Recognition Plaque)
+   ========================================================= */
 .story-bottom-canvas {
-  height: 62%;
-  background: linear-gradient(180deg, #b00c14 0%, #88070d 100%);
-  padding: 6.8rem 1.4rem 1.1rem 1.4rem;
+  position: relative;
+  flex: 1;
+  background: radial-gradient(ellipse at 50% 40%, #850b12 0%, #5c0408 55%, #350104 100%);
+  padding: 4.8rem 1.15rem 0.75rem 1.15rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  z-index: 1;
+  z-index: 2;
+}
+
+.story-watermark-fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.story-bg-svg {
+  width: 100%;
+  height: 100%;
 }
 
 .story-donor-block {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(251, 191, 36, 0.35);
+  border-radius: 20px;
+  padding: 0.85rem 1rem 0.95rem 1rem;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 4;
 }
 
 .story-honor-badge {
-  font-size: 0.78rem;
-  font-weight: 900;
-  color: #fef08a;
-  letter-spacing: 0.6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.25), transparent);
+  padding: 0.15rem 0.75rem;
+}
+
+.badge-star {
+  color: #fbbf24;
+  font-size: 0.75rem;
+}
+
+.badge-text {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fde047;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .story-donor-name {
-  font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   color: #ffffff;
   line-height: 1.15;
-  margin: 0.3rem 0;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  margin: 0.25rem 0 0.35rem 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65), 0 0 14px rgba(254, 202, 202, 0.3);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-quote-box {
+  margin: 0.25rem auto 0 auto;
+  max-width: 440px;
 }
 
 .story-donor-quote {
-  font-size: 0.85rem;
-  font-style: italic;
-  color: #fef2f2;
-  line-height: 1.35;
-  margin: 0.1rem 0 0.7rem 0;
-  max-width: 380px;
+  font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #fef08a;
+  line-height: 1.3;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .story-pills-row {
   display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
 }
 
 .spill-item {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.3rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  padding: 0.25rem 0.75rem;
   border-radius: 999px;
-  color: #ffffff;
   font-size: 0.78rem;
   font-weight: 700;
+  color: #f8fafc;
 }
 
+.spill-icon {
+  font-size: 0.76rem;
+}
+
+.ref-item {
+  color: #fde047;
+}
+
+/* Bottom Slogan Ribbon Base */
 .story-footer-bar {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 0.6rem;
-  width: 100%;
+  position: relative;
+  background: linear-gradient(135deg, #2a0103 0%, #400205 50%, #1e0002 100%);
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  margin-top: 0.65rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  z-index: 4;
+}
+
+.story-footer-line {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+}
+
+.story-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.footer-drop-icon {
+  font-size: 0.85rem;
+}
+
+.footer-motto-text {
   font-size: 0.82rem;
   font-weight: 800;
-  color: #fef08a;
-  letter-spacing: 0.4px;
+  color: #f8fafc;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

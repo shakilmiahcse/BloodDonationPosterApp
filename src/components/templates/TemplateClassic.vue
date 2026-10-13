@@ -13,7 +13,11 @@
         <!-- Top Left Typography Column -->
         <div class="bb-org-info">
           <!-- Scaled down to fit strictly in 1 line as requested -->
-          <h1 class="bb-org-name" :title="data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME')">
+          <h1 
+            class="bb-org-name" 
+            :style="{ fontSize: orgNameFontSize }"
+            :title="data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME')"
+          >
             {{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}
           </h1>
           
@@ -252,6 +256,13 @@ const parsedCount = computed(() => {
     number: val,
     unit: isBn.value ? 'বার' : 'Time'
   };
+});
+
+const orgNameFontSize = computed(() => {
+  const len = (props.data.orgName || '').length;
+  if (len > 35) return '0.92rem';
+  if (len > 25) return '1.02rem';
+  return '1.16rem';
 });
 </script>
 

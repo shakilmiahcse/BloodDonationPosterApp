@@ -10,7 +10,13 @@
             <span v-else class="ed-logo-fallback">🩸</span>
           </div>
           <div class="ed-banner-titles">
-            <h1 class="ed-press-org-name">{{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}</h1>
+            <h1 
+              class="ed-press-org-name"
+              :style="{ fontSize: orgNameFontSize }"
+              :title="data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME')"
+            >
+              {{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}
+            </h1>
             <p v-if="data.orgSubtitle" class="ed-press-subtitle">{{ data.orgSubtitle }}</p>
           </div>
         </div>
@@ -134,6 +140,13 @@ const formattedDate = computed(() => {
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   }
   return props.data.donationDate;
+});
+
+const orgNameFontSize = computed(() => {
+  const len = (props.data.orgName || '').length;
+  if (len > 35) return '0.98rem';
+  if (len > 25) return '1.12rem';
+  return '1.25rem';
 });
 </script>
 
