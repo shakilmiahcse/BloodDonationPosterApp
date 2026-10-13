@@ -1,30 +1,57 @@
 <template>
   <div class="story-poster-root" ref="posterEl">
-    <!-- Multi-Layer Background (Ivory Top, 3D Wave, Royal Crimson Base) -->
+    <!-- Seamless Full-Bleed Curved Vector Background (Zero Straight Seams) -->
     <div class="story-bg-layer" aria-hidden="true">
-      <div class="story-bg-top-ivory"></div>
-      <div class="story-bg-wave">
-        <svg viewBox="0 0 540 90" preserveAspectRatio="none" class="story-wave-svg">
-          <defs>
-            <linearGradient id="storyWaveRuby" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#b91c1c" />
-              <stop offset="50%" stop-color="#88080f" />
-              <stop offset="100%" stop-color="#550307" />
-            </linearGradient>
-            <linearGradient id="storyWaveGold" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#d97706" />
-              <stop offset="50%" stop-color="#fef08a" />
-              <stop offset="100%" stop-color="#f59e0b" />
-            </linearGradient>
-          </defs>
-          <path d="M0,30 C150,75 340,12 540,50 L540,90 L0,90 Z" fill="rgba(0, 0, 0, 0.4)" />
-          <path d="M0,33 C150,78 340,15 540,53 L540,57 C340,19 150,82 0,37 Z" fill="url(#storyWaveGold)" />
-          <path d="M0,37 C150,82 340,19 540,57 L540,90 L0,90 Z" fill="url(#storyWaveRuby)" />
-        </svg>
-      </div>
-      <div class="story-bg-bottom-crimson">
-        <div class="story-ambient-glow"></div>
-      </div>
+      <svg viewBox="0 0 540 960" preserveAspectRatio="none" class="story-full-bg-svg">
+        <defs>
+          <!-- Top Ivory Gradient -->
+          <linearGradient id="storyIvoryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="65%" stop-color="#fdf8f6" />
+            <stop offset="100%" stop-color="#f8ece8" />
+          </linearGradient>
+
+          <!-- Royal Crimson Base Gradient -->
+          <radialGradient id="storyCrimsonBase" cx="50%" cy="60%" r="65%">
+            <stop offset="0%" stop-color="#8a0c13" />
+            <stop offset="55%" stop-color="#5a0408" />
+            <stop offset="100%" stop-color="#300104" />
+          </radialGradient>
+
+          <!-- 3D Metallic Gold Highlight Ridge -->
+          <linearGradient id="storyGoldRidge" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#d97706" />
+            <stop offset="35%" stop-color="#fef08a" />
+            <stop offset="70%" stop-color="#f59e0b" />
+            <stop offset="100%" stop-color="#b45309" />
+          </linearGradient>
+
+          <!-- Ruby Accent Wave Layer -->
+          <linearGradient id="storyRubyWave" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#cb101a" />
+            <stop offset="50%" stop-color="#990810" />
+            <stop offset="100%" stop-color="#550307" />
+          </linearGradient>
+        </defs>
+
+        <!-- Base: Deep Royal Crimson Base Canvas -->
+        <rect x="0" y="0" width="540" height="960" fill="url(#storyCrimsonBase)" />
+
+        <!-- Ambient Spotlight Glow in Crimson Area -->
+        <circle cx="270" cy="560" r="230" fill="rgba(254, 202, 202, 0.08)" />
+
+        <!-- Layer 1: Top Ivory Area bounded STRICTLY by the curve (No straight line!) -->
+        <path d="M0,0 L540,0 L540,312 C370,270 180,355 0,298 Z" fill="url(#storyIvoryGrad)" />
+
+        <!-- Layer 2: Translucent Depth Shadow Wave -->
+        <path d="M0,298 C180,355 370,270 540,312 L540,324 C370,282 180,367 0,310 Z" fill="rgba(0, 0, 0, 0.35)" />
+
+        <!-- Layer 3: Main Rich Ruby Accent Wave -->
+        <path d="M0,302 C180,359 370,274 540,316 L540,328 C370,286 180,371 0,314 Z" fill="url(#storyRubyWave)" opacity="0.85" />
+
+        <!-- Layer 4: 3D Metallic Golden Highlight Ridge (Follows the exact curve edge) -->
+        <path d="M0,298 C180,355 370,270 540,312 L540,316 C370,274 180,359 0,302 Z" fill="url(#storyGoldRidge)" />
+      </svg>
     </div>
 
     <!-- Content Layer (Proper Flow Layout, Zero Overlapping) -->
@@ -221,48 +248,22 @@ const orgNameFontSize = computed(() => {
 }
 
 /* =========================================================
-   BACKGROUND LAYER
+   BACKGROUND LAYER (Seamless Full-Bleed Vector Canvas)
    ========================================================= */
 .story-bg-layer {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 1;
+  overflow: hidden;
 }
 
-.story-bg-top-ivory {
-  height: 310px;
-  background: linear-gradient(175deg, #ffffff 0%, #fdf8f6 60%, #f7ebe8 100%);
-}
-
-.story-bg-wave {
-  margin-top: -30px;
-  height: 90px;
-  width: 100%;
-}
-
-.story-wave-svg {
+.story-full-bg-svg {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.story-bg-bottom-crimson {
-  flex: 1;
-  background: radial-gradient(ellipse at 50% 30%, #850b12 0%, #5c0408 55%, #300104 100%);
-  position: relative;
-}
-
-.story-ambient-glow {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 440px;
-  height: 440px;
-  background: radial-gradient(circle, rgba(254, 202, 202, 0.15) 0%, transparent 70%);
 }
 
 /* =========================================================
