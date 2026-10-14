@@ -180,13 +180,15 @@ const formattedDate = computed(() => {
   return formatBengaliDate(props.data.donationDate, isBn.value);
 });
 
-// Adaptive font sizing so long organization names fit cleanly in 1 line
+// Adaptive font sizing for organization name
 const orgNameFontSize = computed(() => {
   const len = (props.data.orgName || '').length;
-  if (len > 45) return '0.82rem';
-  if (len > 32) return '0.96rem';
-  if (len > 22) return '1.12rem';
-  return '1.28rem';
+  if (!len) return '1.4rem';
+  if (len <= 16) return '1.48rem';
+  if (len <= 26) return '1.32rem';
+  if (len <= 38) return '1.18rem';
+  if (len <= 50) return '1.02rem';
+  return '0.88rem';
 });
 </script>
 
@@ -267,8 +269,8 @@ const orgNameFontSize = computed(() => {
 
 /* 3D Gold Logo Medallion */
 .tm-logo-wrap {
-  width: 72px;
-  height: 72px;
+  width: 86px;
+  height: 86px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -292,7 +294,7 @@ const orgNameFontSize = computed(() => {
 .tm-logo-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 50%;
 }
 
@@ -308,12 +310,12 @@ const orgNameFontSize = computed(() => {
 }
 
 .emblem-drop {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   line-height: 1;
 }
 
 .emblem-txt {
-  font-size: 0.52rem;
+  font-size: 0.6rem;
   font-weight: 900;
   color: #b90e17;
   letter-spacing: 0.5px;
@@ -332,12 +334,14 @@ const orgNameFontSize = computed(() => {
   font-family: 'Outfit', 'Hind Siliguri', sans-serif;
   font-weight: 900;
   color: #ffffff;
-  line-height: 1.18;
+  line-height: 1.2;
   margin: 0;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 10px rgba(254, 202, 202, 0.25);
-  white-space: nowrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   width: 100%;
   letter-spacing: 0.2px;
 }

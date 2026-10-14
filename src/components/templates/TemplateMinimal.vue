@@ -156,7 +156,8 @@ const orgNameFontSize = computed(() => {
   width: 100%;
   aspect-ratio: 10 / 14.1;
   background: #0f172a;
-  padding: 6px;
+  border: 6px solid #0f172a;
+  padding: 0;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   overflow: hidden;

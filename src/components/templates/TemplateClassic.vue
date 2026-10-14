@@ -12,7 +12,6 @@
 
         <!-- Top Left Typography Column -->
         <div class="bb-org-info">
-          <!-- Scaled down to fit strictly in 1 line as requested -->
           <h1 
             class="bb-org-name" 
             :style="{ fontSize: orgNameFontSize }"
@@ -21,16 +20,22 @@
             {{ data.orgName || (isBn ? 'সংগঠনের নাম' : 'ORGANIZATION NAME') }}
           </h1>
           
-          <div v-if="data.orgSubtitle" class="bb-org-subtitle">({{ data.orgSubtitle }})</div>
+          <div v-if="data.orgSubtitle" class="bb-org-subtitle" :style="{ fontSize: orgSubtitleFontSize }">
+            ({{ data.orgSubtitle }})
+          </div>
           
-          <div v-if="data.slogan" class="bb-slogan">{{ data.slogan }}</div>
-          <div v-else-if="!data.orgSubtitle" class="bb-slogan">{{ isBn ? 'রক্ত দেওয়ার জন্যেই আমরা' : 'For Voluntary Blood Service' }}</div>
+          <div v-if="data.slogan" class="bb-slogan" :style="{ fontSize: sloganFontSize }">
+            {{ data.slogan }}
+          </div>
+          <div v-else-if="!data.orgSubtitle" class="bb-slogan" :style="{ fontSize: sloganFontSize }">
+            {{ isBn ? 'রক্ত দেওয়ার জন্যেই আমরা' : 'For Voluntary Blood Service' }}
+          </div>
 
-          <div class="bb-hero-quote">
+          <div class="bb-hero-quote" :style="{ fontSize: heroQuoteFontSize }">
             “{{ data.heroQuote || (isBn ? 'রক্তের প্রয়োজনে মুমূর্ষু রোগীর পাশে' : 'Standing beside patients in need') }}”
           </div>
 
-          <div class="bb-motto">
+          <div class="bb-motto" :style="{ fontSize: mottoFontSize }">
             <template v-if="data.quote">
               <span class="motto-line">{{ data.quote }}</span>
             </template>
@@ -260,9 +265,45 @@ const parsedCount = computed(() => {
 
 const orgNameFontSize = computed(() => {
   const len = (props.data.orgName || '').length;
-  if (len > 35) return '0.92rem';
-  if (len > 25) return '1.02rem';
-  return '1.16rem';
+  if (!len) return '1.45rem';
+  if (len <= 16) return '1.58rem';
+  if (len <= 26) return '1.42rem';
+  if (len <= 38) return '1.25rem';
+  if (len <= 50) return '1.10rem';
+  return '0.98rem';
+});
+
+const orgSubtitleFontSize = computed(() => {
+  const len = (props.data.orgSubtitle || '').length;
+  if (!len) return '1.12rem';
+  if (len <= 18) return '1.18rem';
+  if (len <= 30) return '1.05rem';
+  return '0.92rem';
+});
+
+const sloganFontSize = computed(() => {
+  const len = (props.data.slogan || '').length;
+  if (!len) return '1.15rem';
+  if (len <= 20) return '1.22rem';
+  if (len <= 35) return '1.08rem';
+  return '0.94rem';
+});
+
+const heroQuoteFontSize = computed(() => {
+  const len = (props.data.heroQuote || '').length;
+  if (!len) return '1.52rem';
+  if (len <= 24) return '1.68rem';
+  if (len <= 38) return '1.46rem';
+  if (len <= 52) return '1.26rem';
+  return '1.10rem';
+});
+
+const mottoFontSize = computed(() => {
+  const len = (props.data.quote || '').length;
+  if (!len) return '1.08rem';
+  if (len <= 25) return '1.16rem';
+  if (len <= 45) return '1.02rem';
+  return '0.88rem';
 });
 </script>
 
@@ -272,7 +313,8 @@ const orgNameFontSize = computed(() => {
   width: 100%;
   aspect-ratio: 10 / 14.1;
   background: #0f1711;
-  padding: 5px;
+  border: 5px solid #0f1711;
+  padding: 0;
   box-sizing: border-box;
   font-family: 'Hind Siliguri', 'Outfit', sans-serif;
   overflow: hidden;
@@ -291,7 +333,7 @@ const orgNameFontSize = computed(() => {
 }
 
 /* =========================================================
-   TOP SECTION (Clean Studio Ivory with Refined Typography)
+   TOP SECTION (Clean Studio Ivory with Dynamic Typography)
    ========================================================= */
 .bb-top-section {
   position: relative;
@@ -326,86 +368,90 @@ const orgNameFontSize = computed(() => {
 
 .bb-org-info {
   flex: 1;
-  max-width: calc(100% - 92px);
+  max-width: calc(100% - 114px);
   display: flex;
   flex-direction: column;
   min-width: 0;
   z-index: 2;
+  gap: 0.18rem;
 }
 
-/* Scaled down so that organization name fits cleanly in ONE line */
+/* Dynamic auto-fit typography: scales based on text length to fill available area beautifully */
 .bb-org-name {
   font-family: 'Outfit', 'Hind Siliguri', sans-serif;
-  font-size: 1.16rem;
   font-weight: 900;
   color: #b90e17;
-  line-height: 1.2;
+  line-height: 1.22;
   letter-spacing: 0.25px;
   text-transform: uppercase;
   margin: 0;
-  white-space: nowrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   text-shadow: 0 1px 2px rgba(185, 14, 23, 0.15);
+  transition: font-size 0.2s ease;
 }
 
 .bb-org-subtitle {
-  font-size: 0.98rem;
   font-weight: 800;
   color: #1e293b;
-  margin-top: 0.15rem;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-top: 0.05rem;
+  line-height: 1.22;
+  word-break: break-word;
+  transition: font-size 0.2s ease;
 }
 
 .bb-slogan {
-  font-size: 0.96rem;
   font-weight: 800;
   color: #1e293b;
-  margin-top: 0.25rem;
-  line-height: 1.2;
+  margin-top: 0.1rem;
+  line-height: 1.22;
+  transition: font-size 0.2s ease;
 }
 
 .bb-hero-quote {
   font-family: 'Tiro Bangla', 'Hind Siliguri', serif;
-  font-size: 1.35rem;
   font-weight: 900;
   color: #0f172a;
-  margin-top: 0.35rem;
-  line-height: 1.2;
+  margin-top: 0.2rem;
+  line-height: 1.22;
   letter-spacing: -0.2px;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+  transition: font-size 0.2s ease;
 }
 
 .bb-motto {
-  margin-top: 0.55rem;
+  margin-top: 0.35rem;
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  transition: font-size 0.2s ease;
 }
 
 .motto-line {
-  font-size: 0.86rem;
+  font-size: inherit;
   font-weight: 700;
   color: #334155;
-  line-height: 1.25;
+  line-height: 1.22;
 }
 
-/* TOP RIGHT LOGO EMBLEM */
+/* TOP RIGHT LOGO EMBLEM - Large, crisp, prominent branded bezel */
 .bb-logo-area {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 0.15rem;
+  padding-top: 0.1rem;
   z-index: 2;
+  width: 104px;
+  flex-shrink: 0;
 }
 
 .bb-logo-frame {
-  width: 76px;
-  height: 76px;
+  width: 98px;
+  height: 98px;
   border-radius: 50%;
   background: #ffffff;
   padding: 3px;
@@ -413,8 +459,9 @@ const orgNameFontSize = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16), 0 0 0 1.5px rgba(185, 14, 23, 0.2);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), 0 0 0 2px rgba(185, 14, 23, 0.25);
   overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
 .bb-logo-img {
@@ -436,16 +483,17 @@ const orgNameFontSize = computed(() => {
 }
 
 .emblem-icon {
-  font-size: 1.6rem;
+  font-size: 2.1rem;
   line-height: 1;
 }
 
 .emblem-text {
-  font-size: 0.52rem;
+  font-size: 0.62rem;
   font-weight: 800;
   color: #b90e17;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  margin-top: 2px;
 }
 
 /* =========================================================

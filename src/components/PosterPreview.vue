@@ -235,14 +235,15 @@ async function downloadImage(format = 'png') {
   emit('notify', t('downloadingBtn'));
 
   try {
-    const targetEl = captureArea.value.firstElementChild || captureArea.value;
-    const canonicalWidth = CANONICAL_WIDTH;
-    const canonicalHeight = targetEl.offsetHeight || Math.round(CANONICAL_WIDTH * 1.41);
-
-    // Save and temporarily reset preview scale to 1 for unscaled coordinate capture
+    // 1. Save and temporarily reset preview scale to 1 for unscaled coordinate capture
     const prevScale = previewScale.value;
     previewScale.value = 1;
     await nextTick();
+
+    // 2. Measure target element at 1:1 scale
+    const targetEl = captureArea.value.firstElementChild || captureArea.value;
+    const canonicalWidth = CANONICAL_WIDTH;
+    const canonicalHeight = targetEl.offsetHeight || Math.round(CANONICAL_WIDTH * 1.41);
 
     const scale = 2; // Sharp 2x HD output (1080px wide on ALL devices)
     const options = {
@@ -253,13 +254,9 @@ async function downloadImage(format = 'png') {
       canvasWidth: canonicalWidth,
       canvasHeight: canonicalHeight,
       cacheBust: false,
+      skipFonts: true, // Prevents cross-origin cssRules SecurityError with Google Fonts
       style: {
         margin: '0',
-        marginLeft: '0',
-        marginRight: '0',
-        marginTop: '0',
-        marginBottom: '0',
-        padding: '0',
         transform: 'none',
         boxShadow: 'none',
         left: '0',
@@ -316,13 +313,13 @@ async function shareNative() {
   isGenerating.value = true;
 
   try {
-    const targetEl = captureArea.value.firstElementChild || captureArea.value;
-    const canonicalWidth = CANONICAL_WIDTH;
-    const canonicalHeight = targetEl.offsetHeight || Math.round(CANONICAL_WIDTH * 1.41);
-
     const prevScale = previewScale.value;
     previewScale.value = 1;
     await nextTick();
+
+    const targetEl = captureArea.value.firstElementChild || captureArea.value;
+    const canonicalWidth = CANONICAL_WIDTH;
+    const canonicalHeight = targetEl.offsetHeight || Math.round(CANONICAL_WIDTH * 1.41);
 
     const blob = await htmlToImage.toBlob(targetEl, {
       pixelRatio: 2,
@@ -331,6 +328,7 @@ async function shareNative() {
       canvasWidth: canonicalWidth,
       canvasHeight: canonicalHeight,
       quality: 0.95,
+      skipFonts: true,
       style: {
         margin: '0',
         transform: 'none',

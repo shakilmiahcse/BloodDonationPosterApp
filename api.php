@@ -346,6 +346,9 @@ switch ($action) {
             "quote" => $input['quote'] ?? ($user['orgSettings']['quote'] ?? ''),
             "orgLogo" => $input['orgLogo'] ?? ($user['orgSettings']['orgLogo'] ?? ''),
             "donorPhoto" => $input['donorPhoto'] ?? '',
+            "photoZoom" => isset($input['photoZoom']) ? (float)$input['photoZoom'] : 1.0,
+            "photoPanX" => isset($input['photoPanX']) ? (float)$input['photoPanX'] : 0.0,
+            "photoPanY" => isset($input['photoPanY']) ? (float)$input['photoPanY'] : 0.0,
             "createdAt" => date('Y-m-d H:i:s')
         ];
 

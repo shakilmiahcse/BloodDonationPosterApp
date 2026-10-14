@@ -450,9 +450,10 @@ const orgNameFontSize = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1.2rem;
-  padding: 0.3rem 0;
+  justify-content: flex-start;
+  margin-top: 4.3rem;
+  gap: 2.2rem;
+  padding: 0;
   z-index: 3;
 }
 

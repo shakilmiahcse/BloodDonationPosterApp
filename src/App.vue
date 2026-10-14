@@ -113,6 +113,7 @@
           :formData="formData" 
           :authState="authState"
           @save-org-defaults="saveOrgDefaults"
+          @switch-tab="activeMobileTab = $event"
           @notify="showToast" 
         />
       </section>
@@ -303,6 +304,9 @@ function performLogout() {
   formData.quote = '';
   formData.donorName = '';
   formData.donorPhoto = '';
+  formData.photoZoom = 1;
+  formData.photoPanX = 0;
+  formData.photoPanY = 0;
   formData.referenceName = '';
   showToast(t('toastLoggedOut'));
 }
@@ -372,9 +376,17 @@ function loadRecord(rec) {
   if (rec.slogan) formData.slogan = rec.slogan;
   if (rec.heroQuote) formData.heroQuote = rec.heroQuote;
   if (rec.quote) formData.quote = rec.quote;
-  if (rec.donorPhoto) {
-    formData.donorPhoto = rec.donorPhoto;
-  }
+  formData.donorPhoto = rec.donorPhoto || '';
+  // Restore isolated photo zoom and pan settings strictly belonging to this poster
+  formData.photoZoom = (rec.photoZoom !== undefined && rec.photoZoom !== null && !isNaN(Number(rec.photoZoom))) 
+    ? Number(rec.photoZoom) 
+    : 1;
+  formData.photoPanX = (rec.photoPanX !== undefined && rec.photoPanX !== null && !isNaN(Number(rec.photoPanX))) 
+    ? Number(rec.photoPanX) 
+    : 0;
+  formData.photoPanY = (rec.photoPanY !== undefined && rec.photoPanY !== null && !isNaN(Number(rec.photoPanY))) 
+    ? Number(rec.photoPanY) 
+    : 0;
   activeMobileTab.value = 'preview';
 }
 </script>

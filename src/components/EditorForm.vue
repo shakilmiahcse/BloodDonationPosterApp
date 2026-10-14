@@ -139,8 +139,21 @@
       <span>{{ t('photoSection') }}</span>
     </div>
 
-    <div class="form-group">
-      <div class="photo-upload-box" @click="triggerFileInput">
+    <div class="form-group photo-section-group">
+      <div class="photo-section-header" v-if="formData.donorPhoto">
+        <span class="photo-live-status">📸 {{ currentLang === 'bn' ? 'লাইভ ফ্রেম প্রিভিউ' : 'Live Framing Preview' }}</span>
+        <button 
+          type="button" 
+          class="btn-quick-preview-tab" 
+          @click="$emit('switch-tab', 'preview')"
+          title="সম্পূর্ণ পোস্টার প্রিভিউ দেখুন"
+        >
+          👁️ {{ t('viewPosterPreview') || 'পোস্টার দেখুন' }}
+        </button>
+      </div>
+
+      <!-- If NO photo uploaded: clean upload box -->
+      <div v-if="!formData.donorPhoto" class="photo-upload-box" @click="triggerFileInput">
         <input 
           type="file" 
           ref="fileInput" 
@@ -148,43 +161,128 @@
           class="hidden-file-input" 
           @change="handlePhotoUpload"
         />
-        <div v-if="formData.donorPhoto" class="photo-preview-wrap">
-          <img :src="formData.donorPhoto" alt="Preview" class="photo-preview-thumbnail" />
-          <p class="photo-upload-prompt">{{ t('changePhotoPrompt') }}</p>
-        </div>
-        <div v-else class="upload-placeholder">
+        <div class="upload-placeholder">
           <div class="upload-icon">📸</div>
           <p class="photo-upload-prompt">{{ t('uploadPhotoPrompt') }}</p>
           <span class="upload-sub">{{ t('mobileUploadHint') }}</span>
         </div>
       </div>
 
-      <!-- Photo Controls (Zoom & Pan) -->
-      <div v-if="formData.donorPhoto" class="photo-adjustments">
-        <div class="photo-controls-row">
-          <label>{{ t('zoomLabel') }}</label>
-          <input 
-            type="range" 
-            min="0.8" 
-            max="2.5" 
-            step="0.05" 
-            v-model.number="formData.photoZoom" 
-          />
-          <span class="ctrl-val">{{ Math.round((formData.photoZoom || 1) * 100) }}%</span>
+      <!-- If photo IS uploaded: Live Interactive Framing Canvas & Touch/Mouse Drag -->
+      <div v-else class="interactive-framer-card">
+        <input 
+          type="file" 
+          ref="fileInput" 
+          accept="image/*" 
+          class="hidden-file-input" 
+          @change="handlePhotoUpload"
+        />
+
+        <!-- Frame Top Toolbar with Hint Tag & Change Button -->
+        <div class="framer-header-bar">
+          <span class="framer-hint-tag">
+            {{ t('dragToFrameHint') || '👆 ছবিতে আঙুল দিয়ে টেনে মুখ ঠিক পজিশনে বসান' }}
+          </span>
+          <button 
+            type="button" 
+            class="btn-framer-change" 
+            @click="triggerFileInput"
+            title="অন্য ছবি সিলেক্ট করুন"
+          >
+            🔄 {{ t('changePhotoBtn') || 'ছবি পরিবর্তন' }}
+          </button>
         </div>
 
-        <div class="photo-controls-row">
-          <label>{{ t('panYLabel') }}</label>
-          <input 
-            type="range" 
-            min="-100" 
-            max="100" 
-            step="2" 
-            v-model.number="formData.photoPanY" 
-          />
-          <button type="button" class="btn btn-secondary btn-sm" @click="resetPhotoAlign">
-            {{ t('resetAlign') }}
-          </button>
+        <!-- The Exact Proportional Poster Photo Frame Stage -->
+        <div class="framer-stage-container">
+          <div 
+            class="framer-window"
+            ref="framerWindowRef"
+            @mousedown="startDrag"
+            @touchstart="startTouchDrag"
+          >
+            <!-- Rule-of-Thirds & Center Face Guide Overlay -->
+            <div class="framer-grid-guide" aria-hidden="true">
+              <div class="grid-line grid-v1"></div>
+              <div class="grid-line grid-v2"></div>
+              <div class="grid-line grid-h1"></div>
+              <div class="grid-line grid-h2"></div>
+              <div class="face-target-oval"></div>
+            </div>
+
+            <!-- The Live Scaled & Panned Photo -->
+            <img 
+              :src="formData.donorPhoto" 
+              alt="Donor Crop" 
+              class="framer-img"
+              :style="{
+                transform: `scale(${formData.photoZoom || 1}) translate(${formData.photoPanX || 0}px, ${formData.photoPanY || 0}px)`
+              }"
+              draggable="false"
+            />
+          </div>
+        </div>
+
+        <!-- Framer Controls Strip -->
+        <div class="framer-controls-block">
+          <!-- Zoom Slider Row with Quick +/- -->
+          <div class="framer-ctrl-row zoom-row">
+            <span class="ctrl-label">🔍 {{ t('zoomLabel') || 'জুম' }}</span>
+            <button 
+              type="button" 
+              class="btn-step-zoom" 
+              @click="adjustZoom(-0.1)"
+              title="জুম কমান"
+            >
+              −
+            </button>
+            <input 
+              type="range" 
+              min="0.5" 
+              max="3.0" 
+              step="0.05" 
+              class="framer-zoom-slider"
+              v-model.number="formData.photoZoom" 
+            />
+            <button 
+              type="button" 
+              class="btn-step-zoom" 
+              @click="adjustZoom(0.1)"
+              title="জুম বাড়ান"
+            >
+              +
+            </button>
+            <span class="ctrl-val-pill">{{ Math.round((formData.photoZoom || 1) * 100) }}%</span>
+          </div>
+
+          <!-- Fine Directional Nudge Pad (Up, Down, Left, Right) + Reset -->
+          <div class="framer-actions-row">
+            <div class="nudge-pad" :title="currentLang === 'bn' ? 'সূক্ষ্ম সরানোর বাটন' : 'Nudge arrows'">
+              <button type="button" class="btn-nudge" @click="nudgePan(0, -6)" title="উপরে">⬆️</button>
+              <button type="button" class="btn-nudge" @click="nudgePan(0, 6)" title="নিচে">⬇️</button>
+              <button type="button" class="btn-nudge" @click="nudgePan(-6, 0)" title="বামে">⬅️</button>
+              <button type="button" class="btn-nudge" @click="nudgePan(6, 0)" title="ডানে">➡️</button>
+            </div>
+
+            <div class="framer-sub-btns">
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm" 
+                @click="resetPhotoAlign"
+                :title="currentLang === 'bn' ? 'সেন্টার এবং ডিফল্ট সাইজ' : 'Reset center'"
+              >
+                ↺ {{ t('resetAlign') || 'রিসেট' }}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm btn-remove-photo" 
+                @click="removeDonorPhoto"
+                title="ছবি মুছুন"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -296,7 +394,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { t, currentLang, quotePresets, countPresets } from '../utils/i18n';
 import { compressImageFile } from '../utils/imageUtils';
 
@@ -311,10 +409,11 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['notify', 'save-org-defaults', 'new-entry']);
+const emit = defineEmits(['notify', 'save-org-defaults', 'new-entry', 'switch-tab']);
 
 const fileInput = ref(null);
 const logoFileInput = ref(null);
+const framerWindowRef = ref(null);
 
 // Facebook PhotoCard styles
 const templates = [
@@ -411,6 +510,94 @@ function resetLogoToDefault() {
   if (props.authState.authenticated) {
     emit('save-org-defaults');
   }
+}
+
+// Interactive Direct Drag & Pan for Live Photo Framer
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let initialPanX = 0;
+let initialPanY = 0;
+
+function startDrag(e) {
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  initialPanX = props.formData.photoPanX || 0;
+  initialPanY = props.formData.photoPanY || 0;
+
+  window.addEventListener('mousemove', onDragging);
+  window.addEventListener('mouseup', stopDrag);
+}
+
+function onDragging(e) {
+  if (!isDragging) return;
+  const dx = e.clientX - dragStartX;
+  const dy = e.clientY - dragStartY;
+  const zoom = props.formData.photoZoom || 1;
+  props.formData.photoPanX = Math.round(initialPanX + (dx / zoom));
+  props.formData.photoPanY = Math.round(initialPanY + (dy / zoom));
+}
+
+function stopDrag() {
+  if (!isDragging) return;
+  isDragging = false;
+  window.removeEventListener('mousemove', onDragging);
+  window.removeEventListener('mouseup', stopDrag);
+}
+
+function startTouchDrag(e) {
+  if (!e.touches || e.touches.length === 0) return;
+  isDragging = true;
+  dragStartX = e.touches[0].clientX;
+  dragStartY = e.touches[0].clientY;
+  initialPanX = props.formData.photoPanX || 0;
+  initialPanY = props.formData.photoPanY || 0;
+
+  window.addEventListener('touchmove', onTouchDragging, { passive: false });
+  window.addEventListener('touchend', stopTouchDrag);
+}
+
+function onTouchDragging(e) {
+  if (!isDragging || !e.touches || e.touches.length === 0) return;
+  if (e.cancelable) e.preventDefault();
+  const dx = e.touches[0].clientX - dragStartX;
+  const dy = e.touches[0].clientY - dragStartY;
+  const zoom = props.formData.photoZoom || 1;
+  props.formData.photoPanX = Math.round(initialPanX + (dx / zoom));
+  props.formData.photoPanY = Math.round(initialPanY + (dy / zoom));
+}
+
+function stopTouchDrag() {
+  if (!isDragging) return;
+  isDragging = false;
+  window.removeEventListener('touchmove', onTouchDragging);
+  window.removeEventListener('touchend', stopTouchDrag);
+}
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onDragging);
+  window.removeEventListener('mouseup', stopDrag);
+  window.removeEventListener('touchmove', onTouchDragging);
+  window.removeEventListener('touchend', stopTouchDrag);
+});
+
+function adjustZoom(amount) {
+  let curr = props.formData.photoZoom || 1;
+  let next = Math.max(0.5, Math.min(3.0, Math.round((curr + amount) * 100) / 100));
+  props.formData.photoZoom = next;
+}
+
+function nudgePan(dx, dy) {
+  props.formData.photoPanX = (props.formData.photoPanX || 0) + dx;
+  props.formData.photoPanY = (props.formData.photoPanY || 0) + dy;
+}
+
+function removeDonorPhoto() {
+  props.formData.donorPhoto = '';
+  props.formData.photoZoom = 1;
+  props.formData.photoPanX = 0;
+  props.formData.photoPanY = 0;
 }
 
 function resetPhotoAlign() {
@@ -665,14 +852,286 @@ function startNewDonorEntry() {
   color: var(--text-muted);
 }
 
-.photo-adjustments {
+.photo-section-group {
   margin-top: 0.5rem;
 }
 
-.ctrl-val {
+.photo-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.photo-live-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.btn-quick-preview-tab {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #b91c1c;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-quick-preview-tab:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+[data-theme="dark"] .btn-quick-preview-tab {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Interactive Live Framing Box */
+.interactive-framer-card {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.framer-header-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.framer-hint-tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+[data-theme="dark"] .framer-hint-tag {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.btn-framer-change {
+  background: transparent;
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-framer-change:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-color: #ef4444;
+}
+
+.framer-stage-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+/* Matches the exact aspect ratio of the poster photo frame (250 / 310) */
+.framer-window {
+  position: relative;
+  width: 220px;
+  height: 272px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 0 3px rgba(239, 68, 68, 0.3);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.framer-window:active {
+  cursor: grabbing;
+}
+
+.framer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Translucent face centering guide & rule of thirds */
+.framer-grid-guide {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.grid-v1 { left: 33.33%; top: 0; bottom: 0; width: 1px; }
+.grid-v2 { left: 66.66%; top: 0; bottom: 0; width: 1px; }
+.grid-h1 { top: 33.33%; left: 0; right: 0; height: 1px; }
+.grid-h2 { top: 66.66%; left: 0; right: 0; height: 1px; }
+
+.face-target-oval {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 105px;
+  height: 135px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(239, 68, 68, 0.65);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.framer-controls-block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.framer-ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.ctrl-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.btn-step-zoom {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  color: var(--text-main);
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-step-zoom:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+.framer-zoom-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.ctrl-val-pill {
   font-size: 0.75rem;
   font-family: 'Outfit', sans-serif;
-  color: var(--text-muted);
-  min-width: 40px;
+  font-weight: 800;
+  color: #b90e17;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  min-width: 42px;
+  text-align: center;
+}
+
+[data-theme="dark"] .ctrl-val-pill {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.framer-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.nudge-pad {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-nudge {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-nudge:hover {
+  background: var(--bg-card-hover);
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.framer-sub-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-remove-photo {
+  color: #ef4444;
+  padding: 0.35rem 0.6rem;
+}
+
+.btn-remove-photo:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
 }
 </style>
